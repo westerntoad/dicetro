@@ -1,14 +1,15 @@
 class Dice {
-    constructor(game, playArea) {
-        Object.assign(this, { game, playArea });
+    constructor(game) {
+        Object.assign(this, { game });
         this.scale = 4;
         this.width = 32 * this.scale;
         this.height = 32 * this.scale;
-        this.x = Math.floor((playArea.width - this.width) / 2);
-        this.y = Math.floor((playArea.height - this.height) / 2);
-        this.speed = 100
-        this.cling = 100
+        this.x = Math.floor((PARAMS.canvasWidth - this.width) / 2);
+        this.y = Math.floor((PARAMS.canvasHeight - this.height) / 2);
+        this.speed = 100;
+        this.cling = 100;
         this.velocity = { x:0, y:0 };
+        this.rotation = 0;
         this.image = ASSET_MANAGER.get('assets/empty-dice.png');
 
         this.currFaces = {}
@@ -19,23 +20,28 @@ class Dice {
     }
 
     update() {
-        if (!this.game.mouse) { return; }
+        this.x += this.velocity.x;
+        this.y += this.velocity.y;
 
-        const dx = this.game.mouse.x - (this.x + (this.width / 2));
-        const dy = this.game.mouse.y - (this.y + (this.height / 2));
-        this.velocity.x += dx * this.speed / 1000;
-        this.velocity.y += dy * this.speed / 1000;
+        if (this.game.mouse.isDown) {
+        //if (true) {
+            const dx = this.game.mouse.x - (this.x + (this.width / 2));
+            const dy = this.game.mouse.y - (this.y + (this.height / 2));
+            this.velocity.x += dx * this.speed / 1000;
+            this.velocity.y += dy * this.speed / 1000;
 
-        this.x += this.velocity.x + (dx * this.cling / 1000);
-        this.y += this.velocity.y + (dy * this.cling / 1000);
-
-        if (this.x <= 0 || this.x >= this.playArea.width - this.width) {
-            this.x = clamp(0, this.x, this.playArea.width - this.width);
+            this.x += dx * this.cling / 1000;
+            this.y += dy * this.cling / 1000;
+        } else {
+            this.velocity.y += PARAMS.gravity / 1000;
+        }
+        if (this.x <= 0 || this.x >= PARAMS.canvasWidth - this.width) {
+            this.x = clamp(0, this.x, PARAMS.canvasWidth - this.width);
             this.velocity.x = 0;
         }
-        if (this.y <= 0 || this.y >= this.playArea.height - this.height) {
-            this.y = clamp(0, this.y, this.playArea.height - this.height);
-            this.velocity.y = 0;
+        if (this.y <= 0 || this.y >= PARAMS.canvasHeight- this.height) {
+            this.y = clamp(0, this.y, PARAMS.canvasHeight - this.height);
+            this.velocity.y = PARAMS.gravity / 1000;
         }
     }
 

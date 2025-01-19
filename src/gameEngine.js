@@ -10,8 +10,8 @@ class GameEngine {
         this.entities = [];
 
         // Information on the input
-        this.click = null;
-        this.mouse = null;
+        this.click = {};
+        this.mouse = {};
         this.wheel = null;
         this.keys = {};
 
@@ -46,7 +46,7 @@ class GameEngine {
             if (this.options.debugging) {
                 console.log("MOUSE_MOVE", getXandY(e));
             }
-            this.mouse = getXandY(e);
+            Object.assign(this.mouse, getXandY(e));
         });
 
         this.ctx.canvas.addEventListener("click", e => {
