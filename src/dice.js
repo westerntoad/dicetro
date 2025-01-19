@@ -14,16 +14,17 @@ class Dice {
         this.offscreenCanvas.width = this.size;
         this.offscreenCanvas.height = this.size;
         this.offscreenCtx = this.offscreenCanvas.getContext('2d');
-        this.image = ASSET_MANAGER.get('assets/empty-dice.png');
-
-        this.sides = [
-            {}
-        ]
+        this.emptyDice = ASSET_MANAGER.get('assets/empty-dice.png');
+        this.horizontals = ASSET_MANAGER.get('assets/left-right-sides.png');
+        this.verticals = ASSET_MANAGER.get('assets/top-sides.png');
 
         this.currFaces = {}
-        this.currFaces.north = { val: 1, sprite: ASSET_MANAGER.get('assets/top-face.png') }
-        this.currFaces.west = { val: 4, sprite: ASSET_MANAGER.get('assets/left-face.png') }
-        this.currFaces.east = { val: 2, sprite: ASSET_MANAGER.get('assets/right-face.png') }
+        //this.currFaces.north = { val: 1, sprite: ASSET_MANAGER.get('assets/top-face.png') }
+        //this.currFaces.west = { val: 4, sprite: ASSET_MANAGER.get('assets/left-face.png') }
+        //this.currFaces.east = { val: 2, sprite: ASSET_MANAGER.get('assets/right-face.png') }
+        this.currFaces.north = getRandomInt(6);
+        this.currFaces.east = getRandomInt(6);
+        this.currFaces.west = getRandomInt(6);
     }
 
     onFloor() {
@@ -62,6 +63,7 @@ class Dice {
             if (this.rotationElapsedTime >= 1 / PARAMS.rotationSpeed) {
                 this.rotationElapsedTime = this.rotationElapsedTime % (1 / PARAMS.rotationSpeed);
                 this.rotation += Math.PI / 2;
+                this.currFaces.north = getRandomInt(6);
             }
         }
         
@@ -92,26 +94,17 @@ class Dice {
         this.offscreenCtx.translate(-this.size / 2, -this.size / 2);
 
         // draw empty dice
-        this.offscreenCtx.drawImage(this.image, 0, 0, this.size, this.size);
+        //this.offscreenCtx.drawImage(this.emptyDice, 0, 0, this.size, this.size);
+        this.offscreenCtx.drawImage(this.emptyDice, 0, 0, this.size, this.size);
         // draw top face
-        this.offscreenCtx.drawImage(this.currFaces.north.sprite, 3, 1, 26, 14);
+        //this.offscreenCtx.drawImage(this.currFaces.north.sprite, 3, 1, 26, 14);
+        this.offscreenCtx.drawImage(this.verticals, 0, this.currFaces.north * 14, 26, 14, 3, 1, 26, 14);
         // draw left face
-        this.offscreenCtx.drawImage(this.currFaces.west.sprite, 1, 9, 14, 21);
+        //this.offscreenCtx.drawImage(this.currFaces.west.sprite, 1, 9, 14, 21);
         // draw right face
-        this.offscreenCtx.drawImage(this.currFaces.east.sprite, 17, 9, 14, 21);
+        //this.offscreenCtx.drawImage(this.currFaces.east.sprite, 17, 9, 14, 21);
         this.offscreenCtx.restore();
 
         ctx.drawImage(this.offscreenCanvas, this.x, this.y, this.width, this.height);
-
-        /*
-        // draw empty dice
-        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-        // draw top face
-        ctx.drawImage(this.currFaces.north.sprite, this.x + (3 * this.scale), this.y + (1 * this.scale), 26 * this.scale, 14 * this.scale);
-        // draw left face
-        ctx.drawImage(this.currFaces.west.sprite, this.x + (1 * this.scale), this.y + (9 * this.scale), 14 * this.scale, 21 * this.scale);
-        // draw right face
-        ctx.drawImage(this.currFaces.east.sprite, this.x + (17 * this.scale), this.y + (9 * this.scale), 14 * this.scale, 21 * this.scale);
-        */
     }
 }

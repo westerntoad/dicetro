@@ -13,9 +13,8 @@ const PARAMS = {
 const ASSET_MANAGER = new AssetManager();
 
 ASSET_MANAGER.queue('assets/empty-dice.png');
-ASSET_MANAGER.queue('assets/top-face.png');
-ASSET_MANAGER.queue('assets/left-face.png');
-ASSET_MANAGER.queue('assets/right-face.png');
+ASSET_MANAGER.queue('assets/left-right-sides.png');
+ASSET_MANAGER.queue('assets/top-sides.png');
 
 ASSET_MANAGER.downloadAll(() => {
     const canvas = document.getElementById("game");
