@@ -64,8 +64,8 @@ class GameEngine {
             this.rightclick = getXandY(e);
         });
 
-        this.ctx.canvas.addEventListener("mousedown", event => this.mouse.isDown = true);
-        this.ctx.canvas.addEventListener("mouseup", event => this.mouse.isDown = false);
+        window.addEventListener("mousedown", event => this.mouse.isDown = true);
+        window.addEventListener("mouseup", event => this.mouse.isDown = false);
         this.ctx.canvas.addEventListener("keydown", event => this.mouse.isDown = true);
         this.ctx.canvas.addEventListener("keydown", event => this.keys[event.key] = true);
         this.ctx.canvas.addEventListener("keyup", event => this.keys[event.key] = false);
@@ -110,5 +110,3 @@ class GameEngine {
     };
 
 };
-
-// KV Le was here :)

@@ -1,8 +1,13 @@
 const gameEngine = new GameEngine();
 
 const PARAMS = {
-    gravity: 300,
-    drag: 5
+    speed: 100,
+    cling: 100,
+    friction: 100,
+    gravity: 500,
+    drag: 1.4,
+    bounce: 0.4,
+    rotationSpeed: 20
 }
 
 const ASSET_MANAGER = new AssetManager();
