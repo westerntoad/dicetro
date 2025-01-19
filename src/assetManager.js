@@ -6,7 +6,7 @@ class AssetManager {
         this.downloadQueue = [];
     };
 
-    queueDownload(path) {
+    queue(path) {
         console.log("Queueing " + path);
         this.downloadQueue.push(path);
     };
@@ -40,7 +40,7 @@ class AssetManager {
         }
     };
 
-    getAsset(path) {
+    get(path) {
         return this.cache[path];
     };
 };

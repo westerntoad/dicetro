@@ -56,14 +56,6 @@ class GameEngine {
             this.click = getXandY(e);
         });
 
-        this.ctx.canvas.addEventListener("wheel", e => {
-            if (this.options.debugging) {
-                console.log("WHEEL", getXandY(e), e.wheelDelta);
-            }
-            e.preventDefault(); // Prevent Scrolling
-            this.wheel = e;
-        });
-
         this.ctx.canvas.addEventListener("contextmenu", e => {
             if (this.options.debugging) {
                 console.log("RIGHT_CLICK", getXandY(e));
@@ -72,6 +64,9 @@ class GameEngine {
             this.rightclick = getXandY(e);
         });
 
+        this.ctx.canvas.addEventListener("mousedown", event => this.mouse.isDown = true);
+        this.ctx.canvas.addEventListener("mouseup", event => this.mouse.isDown = false);
+        this.ctx.canvas.addEventListener("keydown", event => this.mouse.isDown = true);
         this.ctx.canvas.addEventListener("keydown", event => this.keys[event.key] = true);
         this.ctx.canvas.addEventListener("keyup", event => this.keys[event.key] = false);
     };
