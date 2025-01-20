@@ -1,13 +1,26 @@
 class Dice {
-    constructor(game) {
+    constructor(game, initial) {
         Object.assign(this, { game });
+        this.isControlled = true;
+        this.wasCalculated = false;
         this.scale = 3;
         this.size = 32;
         this.width = this.size * this.scale;
         this.height = this.size * this.scale;
-        this.x = Math.floor((PARAMS.canvasWidth - this.width) / 2);
-        this.y = Math.floor((PARAMS.canvasHeight - this.height) / 2);
-        this.velocity = { x:0, y:0 };
+
+        // completely needless random polar coord generation
+        const angle = Math.random() * 2 * Math.PI;
+        const r = 100;
+        this.x = initial.x + r * Math.cos(angle) - this.width / 2;
+        this.y = initial.y + r * Math.sin(angle) - this.height / 2;
+        this.velocity = {
+            x: Math.random() * 25,
+            y: Math.random() * 25
+        };
+        //this.x = Math.floor(initial.x - this.width / 2);
+        //this.y = Math.floor(initial.y - this.height / 2);
+
+        this.z = this.y;
         this.rotation = 0;
         this.rotationElapsedTime = 0;
         this.offscreenCanvas = document.createElement('canvas');
@@ -18,13 +31,27 @@ class Dice {
         this.horizontals = ASSET_MANAGER.get('assets/left-right-sides.png');
         this.verticals = ASSET_MANAGER.get('assets/top-sides.png');
 
+        // initialize sides
+        this.sides = [1, 2, 3, 4, 5, 6];
+
         this.currFaces = {}
-        //this.currFaces.north = { val: 1, sprite: ASSET_MANAGER.get('assets/top-face.png') }
-        //this.currFaces.west = { val: 4, sprite: ASSET_MANAGER.get('assets/left-face.png') }
-        //this.currFaces.east = { val: 2, sprite: ASSET_MANAGER.get('assets/right-face.png') }
-        this.currFaces.north = getRandomInt(6);
-        this.currFaces.east = getRandomInt(6);
-        this.currFaces.west = getRandomInt(6);
+        this.roll();
+    }
+
+    roll() {
+        const roll1 = getRandomInt(5);
+        let roll2 = getRandomInt(5);
+        let roll3 = getRandomInt(5);
+
+        while (roll1 == roll2)
+            roll2 = getRandomInt(5);
+        
+        while (roll1 == roll3 || roll2 == roll3)
+            roll3 = getRandomInt(5);
+
+        this.currFaces.north = this.sides[roll1];
+        this.currFaces.east  = this.sides[roll2];
+        this.currFaces.west  = this.sides[roll3];
     }
 
     onFloor() {
@@ -36,8 +63,7 @@ class Dice {
         this.x += this.velocity.x;
         this.y += this.velocity.y;
 
-        if (this.game.mouse.isDown) {
-        //if (true) {
+        if (this.game.mouse.isDown && this.isControlled) {
             const dx = this.game.mouse.x - (this.x + (this.width / 2));
             const dy = this.game.mouse.y - (this.y + (this.height / 2));
             this.velocity.x += dx * PARAMS.speed / 1000;
@@ -47,12 +73,18 @@ class Dice {
             this.y += dy * PARAMS.cling / 1000;
         } else {
             this.velocity.y += PARAMS.gravity / 1000;
+            this.isControlled = false;
         }
 
         if (this.onFloor()) {
             this.rotation = 0;
             this.velocity.x = this.velocity.x /  PARAMS.drag;
             this.velocity.y = this.velocity.y / (PARAMS.drag * 1.5);
+
+            if (!this.wasCalculated) {
+                console.log(`Rolled a ${this.currFaces.north + 1}`);
+                this.wasCalculated = true;
+            }
 
             if (Math.abs(this.velocity.x) < 2)
                 this.velocity.x = 0;
@@ -63,7 +95,7 @@ class Dice {
             if (this.rotationElapsedTime >= 1 / PARAMS.rotationSpeed) {
                 this.rotationElapsedTime = this.rotationElapsedTime % (1 / PARAMS.rotationSpeed);
                 this.rotation += Math.PI / 2;
-                this.currFaces.north = getRandomInt(6);
+                this.roll();
             }
         }
         
@@ -79,12 +111,11 @@ class Dice {
 
             this.x = clamp(0, this.x, PARAMS.canvasWidth - this.width);
         }
+
+        this.z = this.y;
     }
 
     draw(ctx) {
-        // TEMP FELT TABLE
-        ctx.fillStyle = 'green';
-        ctx.fillRect(0, PARAMS.canvasHeight - 100, PARAMS.canvasWidth, 100)
 
         // rotate dice
         this.offscreenCtx.save();
@@ -94,15 +125,13 @@ class Dice {
         this.offscreenCtx.translate(-this.size / 2, -this.size / 2);
 
         // draw empty dice
-        //this.offscreenCtx.drawImage(this.emptyDice, 0, 0, this.size, this.size);
         this.offscreenCtx.drawImage(this.emptyDice, 0, 0, this.size, this.size);
         // draw top face
-        //this.offscreenCtx.drawImage(this.currFaces.north.sprite, 3, 1, 26, 14);
         this.offscreenCtx.drawImage(this.verticals, 0, this.currFaces.north * 14, 26, 14, 3, 1, 26, 14);
         // draw left face
-        //this.offscreenCtx.drawImage(this.currFaces.west.sprite, 1, 9, 14, 21);
+        this.offscreenCtx.drawImage(this.horizontals, this.currFaces.west * 14, 0, 14, 21, 1, 9, 14, 21);
         // draw right face
-        //this.offscreenCtx.drawImage(this.currFaces.east.sprite, 17, 9, 14, 21);
+        this.offscreenCtx.drawImage(this.horizontals, this.currFaces.east * 14, 21, 14, 21, 17, 9, 14, 21);
         this.offscreenCtx.restore();
 
         ctx.drawImage(this.offscreenCanvas, this.x, this.y, this.width, this.height);

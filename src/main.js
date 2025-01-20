@@ -1,7 +1,7 @@
 const gameEngine = new GameEngine();
 
 const PARAMS = {
-    speed: 100,
+    speed: 75,
     cling: 100,
     friction: 100,
     gravity: 500,
@@ -25,6 +25,6 @@ ASSET_MANAGER.downloadAll(() => {
 
     gameEngine.init(ctx);
 
-    gameEngine.addEntity(new Dice(gameEngine));
+    gameEngine.addEntity(new SceneManager(gameEngine));
     gameEngine.start();
 });

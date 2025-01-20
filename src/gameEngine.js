@@ -49,7 +49,7 @@ class GameEngine {
             Object.assign(this.mouse, getXandY(e));
         });
 
-        this.ctx.canvas.addEventListener("click", e => {
+        this.ctx.canvas.addEventListener("mousedown", e => {
             if (this.options.debugging) {
                 console.log("CLICK", getXandY(e));
             }
@@ -79,8 +79,10 @@ class GameEngine {
         // Clear the whole canvas with transparent color (rgba(0, 0, 0, 0))
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
-        // Draw latest things first
-        for (let i = this.entities.length - 1; i >= 0; i--) {
+
+        // draw things in order of z value
+        this.entities.sort((a, b) => a.z - b.z);
+        for (let i = 0; i < this.entities.length; i++) {
             this.entities[i].draw(this.ctx, this);
         }
     };
