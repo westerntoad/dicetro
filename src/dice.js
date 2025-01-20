@@ -59,7 +59,6 @@ class Dice {
     }
 
     update() {
-        //console.log(this);
         this.x += this.velocity.x;
         this.y += this.velocity.y;
 

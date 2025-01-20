@@ -34,11 +34,15 @@ class SceneManager {
                 this.deathElapsed = 0;
                 this.deathSpawnCube = 0;
                 this.diceControlDisabled = true;
+                ASSET_MANAGER.get('assets/maintheme.wav').pause();
+                ASSET_MANAGER.get('assets/maintheme.wav').currentTime = 0;
+                ASSET_MANAGER.get('assets/gameover.wav').currentTime = 0;
+                ASSET_MANAGER.get('assets/gameover.wav').play();
             }
 
             this.deathElapsed += this.game.clockTick;
 
-            if (this.deathElapsed <= 5) {
+            if (this.deathElapsed <= 4) {
                 if (this.deathElapsed - this.deathSpawnCube >= 0.05) {
                     this.deathSpawnCube += 0.05;
                     const idxDice = new Dice(this.game, this, {x: PARAMS.canvasWidth / 2, y:PARAMS.canvasHeight - 200});
@@ -48,7 +52,7 @@ class SceneManager {
                     this.dice.push(idxDice);
                 }
             } else if (this.deathElapsed > 8) {
-                const size = { width: 250, height: 75 };
+                const size = { width: 250, height: 70 };
                 const butt = new Button(
                     this.game, this,
                     { x: (PARAMS.canvasWidth - size.width) / 2, y: (PARAMS.canvasHeight - size.height) / 2 + 100 },
@@ -69,6 +73,8 @@ class SceneManager {
 
                         this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');
                         this.game.click = null;
+
+                        ASSET_MANAGER.get('assets/maintheme.wav').play();
 
                         this.game.clear();
                     }
@@ -106,9 +112,6 @@ class SceneManager {
     }
 
     draw(ctx) {
-        // felt table
-        ctx.fillStyle = PARAMS.color.felt;
-        ctx.fillRect(0, PARAMS.canvasHeight - 100, PARAMS.canvasWidth, 100)
 
         // overlay
         const overlayScale = 4;
@@ -122,6 +125,10 @@ class SceneManager {
                 32 * overlayScale, 32 * overlayScale
             );
         }
+
+        // felt table
+        ctx.fillStyle = PARAMS.color.felt;
+        ctx.fillRect(0, PARAMS.canvasHeight - 100, PARAMS.canvasWidth, 100)
 
         // game over
         if (this.rerolls < 0) {
