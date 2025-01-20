@@ -129,7 +129,7 @@ class SceneManager {
                 ctx.textAlign = 'center';
                 ctx.fillText('Final Score', PARAMS.canvasWidth / 2, PARAMS.canvasHeight / 2 - 165);
             }
-            if (this.deathElapsed > 7) {
+            if (this.deathElapsed > 6.5) {
                 ctx.font = '35pt monospace'
                 ctx.fillStyle = '#00dd00'
                 ctx.fillText(this.score, PARAMS.canvasWidth / 2, PARAMS.canvasHeight / 2 - 100);
