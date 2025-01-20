@@ -80,8 +80,6 @@ class GameEngine {
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
 
-        // draw things in order of z value
-        this.entities.sort((a, b) => a.z - b.z);
         for (let i = 0; i < this.entities.length; i++) {
             this.entities[i].draw(this.ctx, this);
         }
@@ -107,9 +105,19 @@ class GameEngine {
 
     loop() {
         this.clockTick = this.timer.tick();
+        // draw things in order of z value
+        this.entities.sort((a, b) => a.z - b.z);
         this.update();
         this.draw();
     };
+
+    clear() {
+        for (let i = 0; i < this.entities.length; i++) {
+            if (!this.entities[i].overlay) {
+                this.entities[i].removeFromWorld = true;
+            }
+        }
+    }
 
     clearDice() {
         for (let i = 0; i < this.entities.length; i++) {

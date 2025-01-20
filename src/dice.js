@@ -2,6 +2,7 @@ class Dice {
     constructor(game, scene, initial) {
         Object.assign(this, { game, scene });
         this.isControlled = true;
+        this.disabled = false;
         this.wasCalculated = false;
         this.scale = 3;
         this.size = 32;
@@ -17,10 +18,8 @@ class Dice {
             x: Math.random() * 25,
             y: Math.random() * 25
         };
-        //this.x = Math.floor(initial.x - this.width / 2);
-        //this.y = Math.floor(initial.y - this.height / 2);
+        this.z = 1 + 1 / this.y;
 
-        this.z = this.y;
         this.rotation = 0;
         this.rotationElapsedTime = 0;
         this.offscreenCanvas = document.createElement('canvas');
@@ -60,10 +59,11 @@ class Dice {
     }
 
     update() {
+        //console.log(this);
         this.x += this.velocity.x;
         this.y += this.velocity.y;
 
-        if (this.game.mouse.isDown && this.isControlled) {
+        if (this.game.mouse.isDown && this.isControlled && !this.scene.diceControlDisabled) {
             const dx = this.game.mouse.x - (this.x + (this.width / 2));
             const dy = this.game.mouse.y - (this.y + (this.height / 2));
             this.velocity.x += dx * PARAMS.speed / 1000;
@@ -82,7 +82,7 @@ class Dice {
             this.velocity.y = this.velocity.y / (PARAMS.drag * 1.5);
 
             if (!this.wasCalculated) {
-                console.log(`Rolled a ${this.currFaces.north + 1}`);
+                this.scene.gold += this.currFaces.north + 1;
                 this.scene.overlay.push(this.currFaces.north + 1);
                 this.wasCalculated = true;
             }
