@@ -10,7 +10,6 @@ class Shop {
         this.numItems = 3;
         this.items = [];
         for (let i = 0; i < this.numItems; i++) {
-            console.log(this);
             const size = {
                 width: 200,
                 height: this.height - 150
@@ -37,7 +36,16 @@ class Shop {
             { width: 200, height: 40 },
             'Extra Roll',
             PARAMS.color.extraRoll, PARAMS.color.extraRollDark, '',
-            console.log
+            () => {
+                const newCost = this.scene.previousExtraRollCost + this.scene.extraRollCost;
+                if (newCost > this.scene.gold)
+                    return;
+
+                this.scene.previousExtraRollCost = this.scene.extraRollCost;
+                this.scene.extraRollCost = newCost;
+                this.scene.gold -= newCost;
+                this.scene.rerolls += 1;
+            }
         );
         this.startButton = new Button(
             game, scene,
@@ -46,16 +54,14 @@ class Shop {
             'Start',
             PARAMS.color.start, PARAMS.color.startDark, '',
             () => {
+                this.scene.score += 1;
                 this.scene.rerolls--;
                 this.scene.items = [];
                 this.scene.overlay = [];
                 this.scene.dice.forEach(x => { x.removeFromWorld = true; });
                 this.scene.inShop = false;
                 this.scene.shouldThrow = true;
-                this.removeFromWorld = true;
-                this.extraRollButton.removeFromWorld = true;
-                this.startButton.removeFromWorld = true;
-                this.items.forEach(x => { x.removeFromWorld = true; });
+                this.game.clear();
             }
         );
         this.game.addEntity(this.startButton);
@@ -89,6 +95,11 @@ class Shop {
         ctx.textAlign = 'left';
         ctx.fillText(`. ${this.scene.rerolls}`, this.x + 131, this.y + this.height - 25);
         ctx.drawImage(ASSET_MANAGER.get('assets/reroll.png'), this.x + 129, this.y + this.height - 44, 16 * 1.5, 16 * 1.5);
+
+        // extra roll button cost
+        ctx.fillStyle = 'red';
+        ctx.textAlign = 'right';
+        //ctx.fillText(`${this.scene}`, this.x + this.width / 2, this.y + 35);
     }
 }
 
@@ -112,7 +123,6 @@ class Button {
         if (this.game.click) {
             const e = this.game.click;
             if (e.x >= this.x && e.x <= this.x + this.width && e.y >= this.y && e.y <= this.y + this.height) {
-                this.game.click = null;
                 this.onclick();
             }
         }
@@ -134,6 +144,7 @@ class Item {
     constructor(game, scene, loc, size, rarity) {
         Object.assign(this, { game, scene, rarity });
 
+        this.taken = false;
         this.width = size.width;
         this.height = size.height;
         this.x = loc.x - size.width / 2;
@@ -142,11 +153,34 @@ class Item {
     }
 
     update() {
-        // TODO
+        if (this.game.click) {
+            const e = this.game.click;
+            if (e.x >= this.x && e.x <= this.x + this.width && e.y >= this.y && e.y <= this.y + this.height) {
+                let item = { sides: [1, 1, 1, 1, 1, 1] };
+                if (this.rarity == 'common') {
+                    item = ITEM_POOL.commons[getRandomInt(ITEM_POOL.commons.length - 1)]
+                } else if (this.rarity == 'uncommon') {
+                    item = ITEM_POOL.uncommons[getRandomInt(ITEM_POOL.rares.length - 1)]
+                } else {
+                    item = ITEM_POOL.rares[getRandomInt(ITEM_POOL.rares.length - 1)]
+                }
+                this.scene.dice.push(item);
+
+                this.taken = true;
+            }
+        }
     }
 
     draw(ctx) {
-        ctx.fillStyle = '#800000'
+        if (this.taken) {
+            ctx.fillStyle = '#FFFFFF';
+        } else if (this.rarity == 'common') {
+            ctx.fillStyle = '#888888';
+        } else if (this.rarity == 'uncommon') {
+            ctx.fillStyle = '#0000FF';
+        } else {
+            ctx.fillStyle = '#FF00FF';
+        }
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 }

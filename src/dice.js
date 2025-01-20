@@ -1,6 +1,6 @@
 class Dice {
-    constructor(game, scene, initial) {
-        Object.assign(this, { game, scene });
+    constructor(game, scene, initial, sides) {
+        Object.assign(this, { game, scene, sides });
         this.isControlled = true;
         this.disabled = false;
         this.wasCalculated = false;
@@ -29,9 +29,6 @@ class Dice {
         this.emptyDice = ASSET_MANAGER.get('assets/empty-dice.png');
         this.horizontals = ASSET_MANAGER.get('assets/left-right-sides.png');
         this.verticals = ASSET_MANAGER.get('assets/top-sides.png');
-
-        // initialize sides
-        this.sides = [1, 2, 3, 4, 5, 6];
 
         this.currFaces = {}
         this.roll();
@@ -85,7 +82,6 @@ class Dice {
                 this.scene.overlay.push(this.currFaces.north + 1);
                 this.wasCalculated = true;
             }
-
             if (Math.abs(this.velocity.x) < 2)
                 this.velocity.x = 0;
             if (Math.abs(this.velocity.y) < 2)

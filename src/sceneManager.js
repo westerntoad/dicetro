@@ -6,13 +6,15 @@ class SceneManager {
         this.shouldThrow = true;
         this.firstClick = true;
         this.overlay = [];
-        this.dice = [];
+        this.dice = [ {sides: [1, 2, 3, 4, 5, 6]} ];
         this.inShop = false;
         this.shopDelay = 1;
         this.shopDelayElapsed = 0;
         this.gold = 0;
         this.rerolls = PARAMS.initialRolls;
-        this.score = 0;
+        this.score = 1;
+        this.extraRollCost = 1;
+        this.previousExtraRollCost = 1;
 
         this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');
         this.game.click = null;
@@ -20,8 +22,9 @@ class SceneManager {
     }
 
     allDiceScored() {
-        for (let i = 0; i < this.dice.length; i++) {
-            if (!this.dice[i].wasCalculated)
+        for (let i = 0; i < this.game.entities.length; i++) {
+            const entity = this.game.entities[i];
+            if (entity.currFaces && !entity.wasCalculated)
                 return false;
         }
 
@@ -29,6 +32,7 @@ class SceneManager {
     }
 
     update() {
+        console.log(this.dice);
         if (this.rerolls < 0) { // game over
             if (!this.deathElapsed) {
                 this.deathElapsed = 0;
@@ -45,11 +49,10 @@ class SceneManager {
             if (this.deathElapsed <= 4) {
                 if (this.deathElapsed - this.deathSpawnCube >= 0.05) {
                     this.deathSpawnCube += 0.05;
-                    const idxDice = new Dice(this.game, this, {x: PARAMS.canvasWidth / 2, y:PARAMS.canvasHeight - 200});
+                    const idxDice = new Dice(this.game, this, {x: PARAMS.canvasWidth / 2, y:PARAMS.canvasHeight - 200}, [1, 2, 3, 4, 5, 6]);
                     idxDice.velocity.y = -Math.random() * 25;
                     idxDice.velocity.x = (Math.random() - 0.5) * 50;
                     this.game.addEntity(idxDice);
-                    this.dice.push(idxDice);
                 }
             } else if (this.deathElapsed > 8) {
                 const size = { width: 250, height: 70 };
@@ -65,11 +68,13 @@ class SceneManager {
 
                         this.shouldThrow = true;
                         this.overlay = [];
-                        this.dice = [];
+                        this.dice = [{ sides: [1, 2, 3, 4, 5, 6] }];
                         this.inShop = false;
                         this.gold = 0;
                         this.rerolls = PARAMS.initialRolls;
                         this.score = 0;
+                        this.extraRollCost = 1;
+                        this.previousExtraRollCost = 1;
 
                         this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');
                         this.game.click = null;
@@ -88,10 +93,9 @@ class SceneManager {
                 ASSET_MANAGER.playAsset('assets/maintheme.wav');
                 this.firstClick = false;
             }
-            for (let i = 0; i < this.totalDice; i++) {
-                let idxDice = new Dice(this.game, this, this.game.click);
+            for (let i = 0; i < this.dice.length; i++) {
+                let idxDice = new Dice(this.game, this, this.game.click, this.dice[i].sides);
                 this.game.addEntity(idxDice);
-                this.dice.push(idxDice);
             }
             this.shouldThrow = false;
             this.game.click = null;

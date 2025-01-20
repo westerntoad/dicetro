@@ -109,6 +109,9 @@ class GameEngine {
         this.entities.sort((a, b) => a.z - b.z);
         this.update();
         this.draw();
+
+        // TODO fix
+        this.click = null;
     };
 
     clear() {

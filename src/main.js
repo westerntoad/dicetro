@@ -35,6 +35,12 @@ const PARAMS = {
     }
 }
 
+const ITEM_POOL = {
+    commons: [{ sides: [1, 2, 3, 4, 5, 6] }],
+    uncommons: [{ sides: [2, 2, 3, 4, 6, 6] }],
+    rares: [{ sides: [4, 4, 5, 5, 6, 6] }]
+};
+
 const ASSET_MANAGER = new AssetManager();
 
 ASSET_MANAGER.queue('assets/empty-dice.png');
@@ -47,11 +53,6 @@ ASSET_MANAGER.queue('assets/maintheme.wav');
 ASSET_MANAGER.queue('assets/gameover.wav');
 
 ASSET_MANAGER.downloadAll(() => {
-    let arr = [0, 0, 0, 0, 0, 0];
-    for (let i = 0; i < 1000; i++) {
-        arr[getRandomInt(5)] += 1;
-    }
-    console.log(arr);
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
     PARAMS.canvasWidth = canvas.width;
