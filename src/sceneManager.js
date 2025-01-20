@@ -18,7 +18,7 @@ class SceneManager {
             this.game.click = null;
         } else if (this.game.click) {
             this.game.clearDice();
-            this.game.overlay = [];
+            this.overlay = [];
             this.shouldThrow = true;
             this.game.click = null;
         }
