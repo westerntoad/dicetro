@@ -2,7 +2,6 @@ class SceneManager {
     constructor(game) {
         Object.assign(this, { game });
         this.z = -1;
-        this.totalDice = 1;
         this.shouldThrow = true;
         this.firstClick = true;
         this.overlay = [];
@@ -15,6 +14,7 @@ class SceneManager {
         this.score = 1;
         this.extraRollCost = 1;
         this.previousExtraRollCost = 1;
+        this.diceControlDisabled = false;
 
         this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');
         this.game.click = null;
@@ -75,13 +75,14 @@ class SceneManager {
                         this.score = 0;
                         this.extraRollCost = 1;
                         this.previousExtraRollCost = 1;
+                        this.diceControlDisabled = false;
 
                         this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');
                         this.game.click = null;
-
-                        ASSET_MANAGER.get('assets/maintheme.wav').play();
-
                         this.game.clear();
+
+
+                        ASSET_MANAGER.playAsset('assets/maintheme.wav');
                     }
                 );
                 this.game.addEntity(butt);
@@ -98,7 +99,6 @@ class SceneManager {
                 this.game.addEntity(idxDice);
             }
             this.shouldThrow = false;
-            this.game.click = null;
         } else if (!this.inShop && this.allDiceScored() && !this.shouldThrow) {
             this.shopDelayElapsed += this.game.clockTick;
             if (this.shopDelayElapsed >= this.shopDelay) {
