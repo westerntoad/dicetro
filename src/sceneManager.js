@@ -4,6 +4,7 @@ class SceneManager {
         this.z = -1;
         this.totalDice = 1;
         this.shouldThrow = true;
+        this.firstClick = true;
         this.overlay = [];
         this.dice = [];
         this.inShop = false;
@@ -15,6 +16,7 @@ class SceneManager {
 
         this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');
         this.game.click = null;
+
     }
 
     allDiceScored() {
@@ -75,6 +77,11 @@ class SceneManager {
                 this.done = true;
             }
         } else if (this.game.click && this.shouldThrow) {
+            if (this.firstClick) {
+                ASSET_MANAGER.autoRepeat('assets/maintheme.wav');
+                ASSET_MANAGER.playAsset('assets/maintheme.wav');
+                this.firstClick = false;
+            }
             for (let i = 0; i < this.totalDice; i++) {
                 let idxDice = new Dice(this.game, this, this.game.click);
                 this.game.addEntity(idxDice);

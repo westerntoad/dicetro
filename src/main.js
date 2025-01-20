@@ -43,6 +43,7 @@ ASSET_MANAGER.queue('assets/top-sides.png');
 ASSET_MANAGER.queue('assets/dice-overlay.png');
 ASSET_MANAGER.queue('assets/reroll.png');
 ASSET_MANAGER.queue('assets/coin.png');
+ASSET_MANAGER.queue('assets/maintheme.wav');
 
 ASSET_MANAGER.downloadAll(() => {
     let arr = [0, 0, 0, 0, 0, 0];
