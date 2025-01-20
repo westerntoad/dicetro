@@ -19,9 +19,7 @@ class AssetManager {
         if (this.downloadQueue.length === 0) setTimeout(callback, 10);
         for (let i = 0; i < this.downloadQueue.length; i++) {
             const img = new Image();
-
             const path = this.downloadQueue[i];
-            console.log(path);
 
             img.addEventListener("load", () => {
                 console.log("Loaded " + img.src);
