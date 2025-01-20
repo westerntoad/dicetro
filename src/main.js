@@ -1,6 +1,7 @@
 const gameEngine = new GameEngine();
 
 const PARAMS = {
+    debug: true,
     speed: 75,
     cling: 100,
     friction: 100,
@@ -15,6 +16,7 @@ const ASSET_MANAGER = new AssetManager();
 ASSET_MANAGER.queue('assets/empty-dice.png');
 ASSET_MANAGER.queue('assets/left-right-sides.png');
 ASSET_MANAGER.queue('assets/top-sides.png');
+ASSET_MANAGER.queue('assets/dice-overlay.png');
 
 ASSET_MANAGER.downloadAll(() => {
     const canvas = document.getElementById("game");

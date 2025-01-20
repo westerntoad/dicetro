@@ -111,4 +111,11 @@ class GameEngine {
         this.draw();
     };
 
+    clearDice() {
+        for (let i = 0; i < this.entities.length; i++) {
+            if (this.entities[i].currFaces) {
+                this.entities[i].removeFromWorld = true;
+            }
+        }
+    }
 };

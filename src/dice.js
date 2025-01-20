@@ -1,6 +1,6 @@
 class Dice {
-    constructor(game, initial) {
-        Object.assign(this, { game });
+    constructor(game, scene, initial) {
+        Object.assign(this, { game, scene });
         this.isControlled = true;
         this.wasCalculated = false;
         this.scale = 3;
@@ -83,6 +83,7 @@ class Dice {
 
             if (!this.wasCalculated) {
                 console.log(`Rolled a ${this.currFaces.north + 1}`);
+                this.scene.overlay.push(this.currFaces.north + 1);
                 this.wasCalculated = true;
             }
 
