@@ -29,6 +29,12 @@ class Dice {
         this.emptyDice = ASSET_MANAGER.get('assets/empty-dice.png');
         this.horizontals = ASSET_MANAGER.get('assets/left-right-sides.png');
         this.verticals = ASSET_MANAGER.get('assets/top-sides.png');
+        this.diceSounds = [
+            ASSET_MANAGER.get('assets/diceland1.wav'),
+            ASSET_MANAGER.get('assets/diceland2.wav'),
+            ASSET_MANAGER.get('assets/diceland3.wav')
+        ];
+
 
         this.currFaces = {}
         this.roll();
@@ -81,6 +87,8 @@ class Dice {
                 this.scene.gold += this.currFaces.north + 1;
                 this.scene.overlay.push(this.currFaces.north + 1);
                 this.wasCalculated = true;
+                // play music here
+                this.diceSounds[getRandomInt(3)].play();
             }
             if (Math.abs(this.velocity.x) < 2)
                 this.velocity.x = 0;

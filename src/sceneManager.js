@@ -90,8 +90,8 @@ class SceneManager {
             }
         } else if (this.game.click && this.shouldThrow) {
             if (this.firstClick) {
-                ASSET_MANAGER.autoRepeat('assets/maintheme.wav');
-                ASSET_MANAGER.playAsset('assets/maintheme.wav');
+                //ASSET_MANAGER.autoRepeat('assets/maintheme.wav');
+                //ASSET_MANAGER.playAsset('assets/maintheme.wav');
                 this.firstClick = false;
             }
             for (let i = 0; i < this.dice.length; i++) {

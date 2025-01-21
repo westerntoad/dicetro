@@ -51,6 +51,9 @@ ASSET_MANAGER.queue('assets/reroll.png');
 ASSET_MANAGER.queue('assets/coin.png');
 ASSET_MANAGER.queue('assets/maintheme.wav');
 ASSET_MANAGER.queue('assets/gameover.wav');
+ASSET_MANAGER.queue('assets/diceland1.wav');
+ASSET_MANAGER.queue('assets/diceland2.wav');
+ASSET_MANAGER.queue('assets/diceland3.wav');
 
 ASSET_MANAGER.downloadAll(() => {
     const canvas = document.getElementById("game");
