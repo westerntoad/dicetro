@@ -41,15 +41,15 @@ class Dice {
     }
 
     roll() {
-        const roll1 = getRandomInt(5);
-        let roll2 = getRandomInt(5);
-        let roll3 = getRandomInt(5);
+        const roll1 = getRandomInt(6);
+        let roll2 = getRandomInt(6);
+        let roll3 = getRandomInt(6);
 
         while (roll1 == roll2)
-            roll2 = getRandomInt(5);
+            roll2 = getRandomInt(6);
         
         while (roll1 == roll3 || roll2 == roll3)
-            roll3 = getRandomInt(5);
+            roll3 = getRandomInt(6);
 
         this.currFaces.north = this.sides[roll1];
         this.currFaces.east  = this.sides[roll2];
@@ -85,8 +85,7 @@ class Dice {
             this.velocity.y = this.velocity.y / (PARAMS.drag * 1.5);
 
             if (!this.wasCalculated) {
-                this.scene.gold += this.currFaces.north + 1;
-                this.scene.overlay.push(this.currFaces.north + 1);
+                this.scene.overlay.push(this.currFaces.north);
                 this.wasCalculated = true;
                 const landingSound = this.diceSounds[getRandomInt(3)]
                 ASSET_MANAGER.playAsset(landingSound);
@@ -133,11 +132,11 @@ class Dice {
         // draw empty dice
         this.offscreenCtx.drawImage(this.emptyDice, 0, 0, this.size, this.size);
         // draw top face
-        this.offscreenCtx.drawImage(this.verticals, 0, this.currFaces.north * 14, 26, 14, 3, 1, 26, 14);
+        this.offscreenCtx.drawImage(this.verticals, 0, (this.currFaces.north - 1) * 14, 26, 14, 3, 1, 26, 14);
         // draw left face
-        this.offscreenCtx.drawImage(this.horizontals, this.currFaces.west * 14, 0, 14, 21, 1, 9, 14, 21);
+        this.offscreenCtx.drawImage(this.horizontals, (this.currFaces.west - 1) * 14, 0, 14, 21, 1, 9, 14, 21);
         // draw right face
-        this.offscreenCtx.drawImage(this.horizontals, this.currFaces.east * 14, 21, 14, 21, 17, 9, 14, 21);
+        this.offscreenCtx.drawImage(this.horizontals, (this.currFaces.east - 1) * 14, 21, 14, 21, 17, 9, 14, 21);
         this.offscreenCtx.restore();
 
         ctx.drawImage(this.offscreenCanvas, this.x, this.y, this.width, this.height);

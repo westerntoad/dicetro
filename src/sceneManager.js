@@ -5,21 +5,11 @@ class SceneManager {
         this.shouldThrow = true;
         this.firstClick = true;
         this.overlay = [];
-        //this.dice = [ {sides: [1, 2, 3, 4, 5, 6]} ];
-        // DEBUG
-        this.dice = [
-            {sides: [3, 3, 3, 3, 3, 3]},
-            {sides: [3, 3, 3, 3, 3, 3]},
-            {sides: [3, 3, 3, 3, 3, 3]},
-            {sides: [3, 3, 3, 3, 3, 3]},
-            {sides: [3, 3, 3, 3, 3, 3]},
-            {sides: [3, 3, 3, 3, 3, 3]}
-        ];
-        // DEBUG
+        this.dice = [ {sides: [1, 2, 3, 4, 5, 6]} ];
         this.inShop = false;
-        this.scoreDelay = 0.5;
-        //this.shopDelay = 2.5;
-        this.shopDelay = 1000000000;
+        this.scoreDelay = 0.25;
+        this.shopDelay = 1.25;
+        //this.shopDelay = 1000000000;
         this.shopDelayElapsed = 0;
         this.gold = 0;
         this.rerolls = PARAMS.initialRolls;
@@ -124,6 +114,7 @@ class SceneManager {
                 this.shopDelayElapsed = 0;
             } else if (this.shopDelayElapsed >= this.scoreDelay && !this.showScore) {
                 [this.handName, this.handDesc, this.scoreValue] = score(this.overlay);
+                this.gold += this.scoreValue;
                 this.showScore = true;
             }
         }

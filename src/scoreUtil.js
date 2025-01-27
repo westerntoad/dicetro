@@ -68,13 +68,18 @@ const score = dice => {
                 break;
             }
         }
-        return ["Pair of triples", `(${face} + ${face} + ${face}) × (${face2} + ${face2} + ${face2}) × 4`, face * 3 * face2 * 3 * 4];
+        return ["Pair of triples", `(${face} + ${face} + ${face}) × (${face2} + ${face2} + ${face2}) × 4`, (face * 3 + face2 * 3) * 4];
     } else if (highestCount == 3) {
         // annoying full house edge case
+        for (let i = highestCountIdx - 1; i >= 1; i--) {
+            if (counts[i] == 2) {
+                const face2 = i;
+                return ["Full house", `(${face} + ${face} + ${face} + ${face2} + ${face2}) × 4`, (face * 3 + face2 * 2) * 4];
+            }
+        }
         return ["Three of a kind", `(${face} + ${face} + ${face}) × 3`, face * 3 * 3];
     } else if (highestCount == 2 && highestCountCount == 3) {
         let face2 = 0;
-        let face2Idx = 0;
         for (let i = highestCountIdx - 1; i >= 1; i--) {
             if (counts[i] == counts[highestCountIdx]) {
                 face2 = i;
@@ -88,7 +93,7 @@ const score = dice => {
                 break;
             }
         }
-        return ["Three pair", `(${face} + ${face}) × (${face2} + ${face2}) × (${face3} + ${face3})`, face * 2 * face2 * 2 * face3 * 2];
+        return ["Three pair", `(${face} + ${face}) × (${face2} + ${face2}) × (${face3} + ${face3})`, face * 2 + face2 * 2 + face3 * 2];
     } else if (highestCount == 2 && highestCountCount == 2) {
         let face2 = 0;
         for (let i = highestCountIdx - 1; i >= 1; i--) {
