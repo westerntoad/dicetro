@@ -66,6 +66,17 @@ class Shop {
         );
         this.game.addEntity(this.startButton);
         this.game.addEntity(this.extraRollButton);
+        
+        for (let i = 0; i < 6; i++) {
+            const button = new DiceButton(
+                game, scene,
+                { x: this.x + 300 + 40 * (i % 3), y: this.y + this.height - 90 + 40 * Math.floor(i / 3)},
+                { width: 38, height: 38 },
+                this.scene.dice[i],
+                PARAMS.diceSlotCosts[i]
+            );
+            this.game.addEntity(button);
+        }
     }
 
     update() {
@@ -99,7 +110,62 @@ class Shop {
         // extra roll button cost
         ctx.fillStyle = 'red';
         ctx.textAlign = 'right';
-        //ctx.fillText(`${this.scene}`, this.x + this.width / 2, this.y + 35);
+        ctx.fillText(`${this.scene.extraRollCost}`, this.x + 585, this.y + this.height - 22);
+
+        // current dice
+        
+    }
+}
+
+class DiceButton {
+    constructor(game, scene, loc, size, dice, cost) {
+        Object.assign(this, { game, scene, dice, cost });
+
+        this.width = size.width;
+        this.height = size.height;
+        this.x = loc.x;
+        this.y = loc.y;
+        this.z = 3;
+
+        this.lockImg = ASSET_MANAGER.get('assets/lock.png');
+        this.normalDiceImg = ASSET_MANAGER.get('assets/reroll.png');
+    }
+
+    update() {
+        if (this.game.mouse.x >= this.x && this.game.mouse.x <= this.x + this.width
+              && this.game.mouse.y >= this.y && this.game.mouse.y <= this.y + this.height) {
+
+            this.isHighlighted = true;
+        } else {
+            this.isHighlighted = false;
+        }
+    }
+
+    draw(ctx) {
+        if (!this.dice) {
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+            ctx.drawImage(this.lockImg, this.x, this.y, this.width, this.height);
+            if (this.isHighlighted && !this.dice) {
+                const dialogWidth = 150;
+                const dialogHeight = 50;
+
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(this.x  + this.width / 2 - dialogWidth / 2, this.y - dialogHeight, dialogWidth, dialogHeight);
+                ctx.fillStyle = '#000000';
+                ctx.strokeRect(this.x + this.width / 2 - dialogWidth / 2, this.y - dialogHeight, dialogWidth, dialogHeight);
+                ctx.fillStyle = PARAMS.color.gold;
+                ctx.fillStyle = '#ff0000';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'center';
+                ctx.fillText(`-$${this.cost}`, this.x + this.width / 2, (this.y - this.height) + this.height / 2);
+            }
+        } else {
+            ctx.fillStyle = '#dddddd';
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+            ctx.drawImage(this.normalDiceImg, this.x, this.y, this.width, this.height);
+        }
+
     }
 }
 

@@ -7,7 +7,7 @@ class SceneManager {
         this.overlay = [];
         this.dice = [ {sides: [1, 2, 3, 4, 5, 6]} ];
         this.inShop = false;
-        this.scoreDelay = 0.25;
+        this.scoreDelay = 0;
         this.shopDelay = 1.25;
         //this.shopDelay = 1000000000;
         this.shopDelayElapsed = 0;

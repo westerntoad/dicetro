@@ -2,6 +2,7 @@ const gameEngine = new GameEngine();
 
 const PARAMS = {
     initialRolls: 2, // in actuality, 3
+    diceSlotCosts: [0, 10, 50, 100, 250, 1000],
     speed: 75,
     cling: 100,
     friction: 100,
@@ -49,6 +50,7 @@ ASSET_MANAGER.queue('assets/top-sides.png');
 ASSET_MANAGER.queue('assets/dice-overlay.png');
 ASSET_MANAGER.queue('assets/reroll.png');
 ASSET_MANAGER.queue('assets/coin.png');
+ASSET_MANAGER.queue('assets/lock.png');
 ASSET_MANAGER.queue('assets/maintheme.wav');
 ASSET_MANAGER.queue('assets/gameover.wav');
 ASSET_MANAGER.queue('assets/diceland1.wav');
