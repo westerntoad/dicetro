@@ -30,9 +30,9 @@ class Dice {
         this.horizontals = ASSET_MANAGER.get('assets/left-right-sides.png');
         this.verticals = ASSET_MANAGER.get('assets/top-sides.png');
         this.diceSounds = [
-            ASSET_MANAGER.get('assets/diceland1.wav'),
-            ASSET_MANAGER.get('assets/diceland2.wav'),
-            ASSET_MANAGER.get('assets/diceland3.wav')
+            'assets/diceland1.wav',
+            'assets/diceland2.wav',
+            'assets/diceland3.wav'
         ];
 
 
@@ -58,7 +58,8 @@ class Dice {
 
     onFloor() {
         const floorHeight = 100;
-        return this.y >= PARAMS.canvasHeight - this.height + 8 * this.scale - floorHeight;
+        return this.y >= PARAMS.canvasHeight - this.height + 8 * this.scale - floorHeight
+            && (!this.game.mouse.isDown || this.scene.diceControlDisabled || !this.isControlled);
     }
 
     update() {
@@ -87,8 +88,9 @@ class Dice {
                 this.scene.gold += this.currFaces.north + 1;
                 this.scene.overlay.push(this.currFaces.north + 1);
                 this.wasCalculated = true;
-                // play music here
-                this.diceSounds[getRandomInt(3)].play();
+                const landingSound = this.diceSounds[getRandomInt(3)]
+                ASSET_MANAGER.playAsset(landingSound);
+                ASSET_MANAGER.get(landingSound).volume = 1;
             }
             if (Math.abs(this.velocity.x) < 2)
                 this.velocity.x = 0;

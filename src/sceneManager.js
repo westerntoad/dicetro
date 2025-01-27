@@ -5,9 +5,21 @@ class SceneManager {
         this.shouldThrow = true;
         this.firstClick = true;
         this.overlay = [];
-        this.dice = [ {sides: [1, 2, 3, 4, 5, 6]} ];
+        //this.dice = [ {sides: [1, 2, 3, 4, 5, 6]} ];
+        // DEBUG
+        this.dice = [
+            {sides: [3, 3, 3, 3, 3, 3]},
+            {sides: [3, 3, 3, 3, 3, 3]},
+            {sides: [3, 3, 3, 3, 3, 3]},
+            {sides: [3, 3, 3, 3, 3, 3]},
+            {sides: [3, 3, 3, 3, 3, 3]},
+            {sides: [3, 3, 3, 3, 3, 3]}
+        ];
+        // DEBUG
         this.inShop = false;
-        this.shopDelay = 1;
+        this.scoreDelay = 0.5;
+        //this.shopDelay = 2.5;
+        this.shopDelay = 1000000000;
         this.shopDelayElapsed = 0;
         this.gold = 0;
         this.rerolls = PARAMS.initialRolls;
@@ -31,67 +43,71 @@ class SceneManager {
         return true;
     }
 
-    update() {
-        console.log(this.dice);
-        if (this.rerolls < 0) { // game over
-            if (!this.deathElapsed) {
-                this.deathElapsed = 0;
-                this.deathSpawnCube = 0;
-                this.diceControlDisabled = true;
-                ASSET_MANAGER.get('assets/maintheme.wav').pause();
-                ASSET_MANAGER.get('assets/maintheme.wav').currentTime = 0;
-                ASSET_MANAGER.get('assets/gameover.wav').currentTime = 0;
-                ASSET_MANAGER.get('assets/gameover.wav').play();
+    handleDeath() {
+        if (!this.deathElapsed) {
+            this.deathElapsed = 0;
+            this.deathSpawnCube = 0;
+            this.diceControlDisabled = true;
+            ASSET_MANAGER.get('assets/maintheme.wav').pause();
+            ASSET_MANAGER.get('assets/maintheme.wav').currentTime = 0;
+            ASSET_MANAGER.get('assets/gameover.wav').currentTime = 0;
+            ASSET_MANAGER.get('assets/gameover.wav').play();
+        }
+
+        this.deathElapsed += this.game.clockTick;
+
+        if (this.deathElapsed <= 4) {
+            if (this.deathElapsed - this.deathSpawnCube >= 0.05) {
+                this.deathSpawnCube += 0.05;
+                const idxDice = new Dice(this.game, this, {x: PARAMS.canvasWidth / 2, y:PARAMS.canvasHeight - 200}, [1, 2, 3, 4, 5, 6]);
+                idxDice.velocity.y = -Math.random() * 25;
+                idxDice.velocity.x = (Math.random() - 0.5) * 50;
+                this.game.addEntity(idxDice);
             }
+        } else if (this.deathElapsed > 8) {
+            const size = { width: 250, height: 70 };
+            const butt = new Button(
+                this.game, this,
+                { x: (PARAMS.canvasWidth - size.width) / 2, y: (PARAMS.canvasHeight - size.height) / 2 + 100 },
+                size,
+                'Retry',
+                '#880000', '#000000', '30pt Papyrus',
+                () => {
+                    this.deathElapsed = null;
+                    this.deathSpawnCube = null;
 
-            this.deathElapsed += this.game.clockTick;
+                    this.shouldThrow = true;
+                    this.overlay = [];
+                    this.dice = [{ sides: [1, 2, 3, 4, 5, 6] }];
+                    this.inShop = false;
+                    this.gold = 0;
+                    this.rerolls = PARAMS.initialRolls;
+                    this.score = 0;
+                    this.extraRollCost = 1;
+                    this.previousExtraRollCost = 1;
+                    this.diceControlDisabled = false;
 
-            if (this.deathElapsed <= 4) {
-                if (this.deathElapsed - this.deathSpawnCube >= 0.05) {
-                    this.deathSpawnCube += 0.05;
-                    const idxDice = new Dice(this.game, this, {x: PARAMS.canvasWidth / 2, y:PARAMS.canvasHeight - 200}, [1, 2, 3, 4, 5, 6]);
-                    idxDice.velocity.y = -Math.random() * 25;
-                    idxDice.velocity.x = (Math.random() - 0.5) * 50;
-                    this.game.addEntity(idxDice);
+                    this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');
+                    this.game.click = null;
+                    this.game.clear();
+
+
+                    ASSET_MANAGER.playAsset('assets/maintheme.wav');
                 }
-            } else if (this.deathElapsed > 8) {
-                const size = { width: 250, height: 70 };
-                const butt = new Button(
-                    this.game, this,
-                    { x: (PARAMS.canvasWidth - size.width) / 2, y: (PARAMS.canvasHeight - size.height) / 2 + 100 },
-                    size,
-                    'Retry',
-                    '#880000', '#000000', '30pt Papyrus',
-                    () => {
-                        this.deathElapsed = null;
-                        this.deathSpawnCube = null;
+            );
+            this.game.addEntity(butt);
+            this.done = true;
+        }
+    }
 
-                        this.shouldThrow = true;
-                        this.overlay = [];
-                        this.dice = [{ sides: [1, 2, 3, 4, 5, 6] }];
-                        this.inShop = false;
-                        this.gold = 0;
-                        this.rerolls = PARAMS.initialRolls;
-                        this.score = 0;
-                        this.extraRollCost = 1;
-                        this.previousExtraRollCost = 1;
-                        this.diceControlDisabled = false;
-
-                        this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');
-                        this.game.click = null;
-                        this.game.clear();
-
-
-                        ASSET_MANAGER.playAsset('assets/maintheme.wav');
-                    }
-                );
-                this.game.addEntity(butt);
-                this.done = true;
-            }
+    update() {
+        if (this.rerolls < 0) {
+            this.handleDeath();
         } else if (this.game.click && this.shouldThrow) {
             if (this.firstClick) {
                 ASSET_MANAGER.autoRepeat('assets/maintheme.wav');
                 ASSET_MANAGER.playAsset('assets/maintheme.wav');
+                ASSET_MANAGER.get('assets/maintheme.wav').volume = 0.25;
                 this.firstClick = false;
             }
             for (let i = 0; i < this.dice.length; i++) {
@@ -101,10 +117,14 @@ class SceneManager {
             this.shouldThrow = false;
         } else if (!this.inShop && this.allDiceScored() && !this.shouldThrow) {
             this.shopDelayElapsed += this.game.clockTick;
-            if (this.shopDelayElapsed >= this.shopDelay) {
+            if (this.shopDelayElapsed >= this.shopDelay + this.scoreDelay) {
+                this.showScore = false;
                 this.inShop = true;
                 this.game.addEntity(new Shop(this.game, this));
                 this.shopDelayElapsed = 0;
+            } else if (this.shopDelayElapsed >= this.scoreDelay && !this.showScore) {
+                [this.handName, this.handDesc, this.scoreValue] = score(this.overlay);
+                this.showScore = true;
             }
         }
         /*} else if (this.game.click) {
@@ -133,6 +153,16 @@ class SceneManager {
         // felt table
         ctx.fillStyle = PARAMS.color.felt;
         ctx.fillRect(0, PARAMS.canvasHeight - 100, PARAMS.canvasWidth, 100)
+
+        // show score
+        if (this.showScore) {
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 80pt Comic Sans';
+            ctx.fillText(this.handName, PARAMS.canvasWidth / 2, PARAMS.canvasHeight / 2 - 50);
+            ctx.font = '30pt Courier';
+        ctx.fillStyle = '#ffffff';
+            ctx.fillText(`${this.handDesc} = ${this.scoreValue}`, PARAMS.canvasWidth / 2, PARAMS.canvasHeight / 2 + 50);
+        }
 
         // game over
         if (this.rerolls < 0) {

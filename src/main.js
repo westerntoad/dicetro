@@ -1,7 +1,7 @@
 const gameEngine = new GameEngine();
 
 const PARAMS = {
-    initialRolls: 3,
+    initialRolls: 2, // in actuality, 3
     speed: 75,
     cling: 100,
     friction: 100,
