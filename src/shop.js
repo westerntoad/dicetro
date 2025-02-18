@@ -174,6 +174,46 @@ class DiceButton {
             }
         } else if (this.dice) {
             ctx.drawImage(this.normalDiceImg, this.x, this.y, this.width, this.height);
+
+            // draw dice sides
+            if (this.isHighlighted) {
+                // yoinked from scene
+                /*ctx.drawImage(this.overlaySheet,
+                    32 * (this.overlay[i] - 1), 0,
+                    32, 32,
+                    Math.floor(((size * i) % PARAMS.canvasWidth) / size) * size,
+                    Math.floor(size * i / PARAMS.canvasWidth) * size,
+                    32 * overlayScale, 32 * overlayScale
+                );*/
+
+                // please do not look at this
+                const dialogWidth = 300;
+                const dialogHeight = 220;
+                const dialogX = this.x  + this.width / 2 - dialogWidth / 2;
+                const dialogY = this.y - dialogHeight;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(dialogX, dialogY, dialogWidth, dialogHeight);
+                ctx.fillStyle = '#000000';
+                ctx.strokeRect(this.x + this.width / 2 - dialogWidth / 2, this.y - dialogHeight, dialogWidth, dialogHeight);
+                const w = dialogWidth * 0.2;
+                const h = w;
+                for (let i = 0; i < 4; i++) {
+                    const x = dialogX + (w + 10) * i + (dialogWidth - (w + 20) * 3) * 0.5 - 13;
+                    const y = dialogY + dialogHeight * 0.5 - h * 0.5;
+                    const sideVal = this.scene.dice[this.buttonIdx].sides[i] - 1;
+
+                    ctx.drawImage(this.scene.overlaySheet, 32 * sideVal, 0, 32, 32, x, y, w, h);
+                }
+
+                const x = dialogX + (w + 10) + (dialogWidth - (w + 20) * 3) * 0.5 - 13;
+                let y = dialogY + dialogHeight * 0.5 - h * 0.5 - (h + 10);
+                let sideVal = this.scene.dice[this.buttonIdx].sides[4] - 1;
+                ctx.drawImage(this.scene.overlaySheet, 32 * sideVal, 0, 32, 32, x, y, w, h);
+
+                y = dialogY + dialogHeight * 0.5 - h * 0.5 + (h + 10);
+                sideVal = this.scene.dice[this.buttonIdx].sides[5] - 1;
+                ctx.drawImage(this.scene.overlaySheet, 32 * sideVal, 0, 32, 32, x, y, w, h);
+            }
         }
 
     }

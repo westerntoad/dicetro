@@ -5,7 +5,8 @@ class SceneManager {
         this.shouldThrow = true;
         this.firstClick = true;
         this.overlay = [];
-        this.dice = [ {sides: [1, 2, 3, 4, 5, 6]} ];
+        // weird order to make sure dice are displayed correctly
+        this.dice = [ {sides: [1, 3, 6, 4, 5, 2]} ];
         this.inShop = false;
         this.scoreDelay = 0;
         this.shopDelay = 1.25;
