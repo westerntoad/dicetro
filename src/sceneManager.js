@@ -13,7 +13,8 @@ class SceneManager {
         this.diceSlotsUnlocked = [ true, false, false, false, false, false ];
         //this.shopDelay = 1000000000;
         this.shopDelayElapsed = 0;
-        this.gold = 0;
+        //this.gold = 0;
+        this.gold = 999_999; // debug
         this.rerolls = PARAMS.initialRolls;
         this.score = 1;
         this.extraRollCost = 1;

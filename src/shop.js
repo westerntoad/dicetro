@@ -35,7 +35,7 @@ class Shop {
             { x: this.x + this.width - 329, y: this.y + this.height - 49 },
             { width: 200, height: 40 },
             'Extra Roll',
-            PARAMS.color.extraRoll, PARAMS.color.extraRollDark, '',
+            PARAMS.color.extraRoll, PARAMS.color.extraRollDark, '14pt monospace',
             () => {
                 const newCost = this.scene.previousExtraRollCost + this.scene.extraRollCost;
                 if (newCost > this.scene.gold)
@@ -52,7 +52,7 @@ class Shop {
             { x: this.x + this.width - 329, y: this.y + this.height - 94 },
             { width: 200, height: 40 },
             'Start',
-            PARAMS.color.start, PARAMS.color.startDark, '',
+            PARAMS.color.start, PARAMS.color.startDark, '14pt monospace',
             () => {
                 this.scene.score += 1;
                 this.scene.rerolls--;
@@ -250,6 +250,7 @@ class Button {
 
         ctx.fillStyle = '#000000';
         ctx.textAlign = 'center';
+        ctx.textBaseline = 'center';
         ctx.font = this.font;
         ctx.fillText(this.label, this.x + this.width / 2, this.y + this.height / 2 + 5);
     }
@@ -289,6 +290,20 @@ class Item {
     }
 
     draw(ctx) {
+        ctx.save();
+        if (this.taken) {
+            ctx.font = 'italic 38pt monospace'
+            ctx.fillStyle = '#dddddd';
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+            ctx.strokeStyle = '#888888';
+            ctx.strokeRect(this.x, this.y, this.width, this.height);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'center';
+            ctx.fillStyle = '#888888';
+            ctx.fillText('item taken', this.x + this.width / 2, this.y + this.height / 2, this.width - 40);
+            return;
+        }
+
         if (this.taken) {
             ctx.fillStyle = '#FFFFFF';
         } else if (this.rarity == 'common') {
@@ -299,5 +314,6 @@ class Item {
             ctx.fillStyle = '#FF00FF';
         }
         ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.restore();
     }
 }
