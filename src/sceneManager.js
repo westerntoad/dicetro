@@ -9,6 +9,7 @@ class SceneManager {
         this.inShop = false;
         this.scoreDelay = 0;
         this.shopDelay = 1.25;
+        this.diceSlotsUnlocked = [ true, false, false, false, false, false ];
         //this.shopDelay = 1000000000;
         this.shopDelayElapsed = 0;
         this.gold = 0;

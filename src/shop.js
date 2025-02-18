@@ -72,8 +72,7 @@ class Shop {
                 game, scene,
                 { x: this.x + 300 + 40 * (i % 3), y: this.y + this.height - 90 + 40 * Math.floor(i / 3)},
                 { width: 38, height: 38 },
-                this.scene.dice[i],
-                PARAMS.diceSlotCosts[i]
+                i
             );
             this.game.addEntity(button);
         }
@@ -118,9 +117,11 @@ class Shop {
 }
 
 class DiceButton {
-    constructor(game, scene, loc, size, dice, cost) {
-        Object.assign(this, { game, scene, dice, cost });
+    constructor(game, scene, loc, size, buttonIdx) {
+        Object.assign(this, { game, scene, buttonIdx });
 
+        this.cost = PARAMS.diceSlotCosts[buttonIdx]
+        this.unlocked = false;
         this.width = size.width;
         this.height = size.height;
         this.x = loc.x;
@@ -132,6 +133,8 @@ class DiceButton {
     }
 
     update() {
+        this.dice = this.scene.dice[this.buttonIdx];
+
         if (this.game.mouse.x >= this.x && this.game.mouse.x <= this.x + this.width
               && this.game.mouse.y >= this.y && this.game.mouse.y <= this.y + this.height) {
 
@@ -139,14 +142,23 @@ class DiceButton {
         } else {
             this.isHighlighted = false;
         }
+
+        console.log(this.game.click);
+        if (this.isHighlighted && this.game.click && this.scene.gold >= this.cost && !this.scene.diceSlotsUnlocked[this.buttonIdx]) {
+            this.scene.diceSlotsUnlocked[this.buttonIdx] = true;
+            this.scene.gold -= this.cost;
+        }
     }
 
     draw(ctx) {
-        if (!this.dice) {
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(this.x, this.y, this.width, this.height);
+        const unlocked = this.scene.diceSlotsUnlocked[this.buttonIdx];
+        ctx.fillStyle = unlocked ? '#dddddd' : '#000000';
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+        if (!this.dice && !unlocked) {
             ctx.drawImage(this.lockImg, this.x, this.y, this.width, this.height);
-            if (this.isHighlighted && !this.dice) {
+
+            // show price
+            if (this.isHighlighted) {
                 const dialogWidth = 150;
                 const dialogHeight = 50;
 
@@ -160,9 +172,7 @@ class DiceButton {
                 ctx.textBaseline = 'center';
                 ctx.fillText(`-$${this.cost}`, this.x + this.width / 2, (this.y - this.height) + this.height / 2);
             }
-        } else {
-            ctx.fillStyle = '#dddddd';
-            ctx.fillRect(this.x, this.y, this.width, this.height);
+        } else if (this.dice) {
             ctx.drawImage(this.normalDiceImg, this.x, this.y, this.width, this.height);
         }
 
@@ -210,6 +220,13 @@ class Item {
     constructor(game, scene, loc, size, rarity) {
         Object.assign(this, { game, scene, rarity });
 
+        if (this.rarity == 'common') {
+            this.item = ITEM_POOL.commons[getRandomInt(ITEM_POOL.commons.length - 1)]
+        } else if (this.rarity == 'uncommon') {
+            this.item = ITEM_POOL.uncommons[getRandomInt(ITEM_POOL.uncommons.length - 1)]
+        } else {
+            this.item = ITEM_POOL.rares[getRandomInt(ITEM_POOL.rares.length - 1)]
+        }
         this.taken = false;
         this.width = size.width;
         this.height = size.height;
@@ -221,17 +238,11 @@ class Item {
     update() {
         if (this.game.click) {
             const e = this.game.click;
-            if (e.x >= this.x && e.x <= this.x + this.width && e.y >= this.y && e.y <= this.y + this.height) {
-                let item = { sides: [1, 1, 1, 1, 1, 1] };
-                if (this.rarity == 'common') {
-                    item = ITEM_POOL.commons[getRandomInt(ITEM_POOL.commons.length - 1)]
-                } else if (this.rarity == 'uncommon') {
-                    item = ITEM_POOL.uncommons[getRandomInt(ITEM_POOL.rares.length - 1)]
-                } else {
-                    item = ITEM_POOL.rares[getRandomInt(ITEM_POOL.rares.length - 1)]
-                }
-                this.scene.dice.push(item);
-
+            const diceSlotsHaveRoom = this.scene.diceSlotsUnlocked[this.scene.dice.length];
+            if (e.x >= this.x && e.x <= this.x + this.width && e.y >= this.y && e.y <= this.y + this.height
+                    && diceSlotsHaveRoom) {
+                
+                this.scene.dice.push(this.item);
                 this.taken = true;
             }
         }
