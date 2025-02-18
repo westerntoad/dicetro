@@ -36,12 +36,6 @@ const PARAMS = {
     }
 }
 
-const ITEM_POOL = {
-    commons: [{ sides: [1, 2, 3, 4, 5, 6] }],
-    uncommons: [{ sides: [2, 2, 3, 4, 6, 6] }],
-    rares: [{ sides: [4, 4, 5, 5, 6, 6] }]
-};
-
 const ASSET_MANAGER = new AssetManager();
 
 ASSET_MANAGER.queue('assets/empty-dice.png');
