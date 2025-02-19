@@ -88,7 +88,7 @@ class Shop {
         // info highlight check
         this.infoHighlighted = mx >= this.x + this.width - 60 && mx <= this.x + this.width - 25 && my >= this.y + 15 && my <= this.y + 50;
         if (this.infoHighlighted && this.game.click) {
-            window.open('https://github.com/westerntoad/tcss491-dicetro', '_blank').focus();
+            window.open('https://github.com/westerntoad/tcss491-dicetro/wiki', '_blank').focus();
         }
 
     }

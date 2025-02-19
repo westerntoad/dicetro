@@ -12,4 +12,4 @@ All other code, as well as all audio and visual assets for this project was crea
 
 ## Wiki
 
-Basic instructions on how to play the game is included on the [wiki page]().
+Basic instructions on how to play the game is included on the [wiki page](https://github.com/westerntoad/tcss491-dicetro/wiki).

@@ -58,6 +58,7 @@ ITEM_POOL._sideFromTable = table => {
 // 1. Dice duplications
 // 2. Increase drop rates
 // 3. for each empty face in your hand 
+// 4. right click to shoot the dice at high speed
 //
 //      OTHER IDEAS
 // 1. Seed feature
