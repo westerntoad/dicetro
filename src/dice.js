@@ -66,7 +66,7 @@ class Dice {
         this.x += this.velocity.x;
         this.y += this.velocity.y;
 
-        if (this.game.mouse.isDown && this.isControlled && !this.scene.diceControlDisabled) {
+        if (this.game.mouse.isDown && this.game.mouse.x && this.isControlled && !this.scene.diceControlDisabled) {
             const dx = this.game.mouse.x - (this.x + (this.width / 2));
             const dy = this.game.mouse.y - (this.y + (this.height / 2));
             this.velocity.x += dx * PARAMS.speed / 1000;

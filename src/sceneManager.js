@@ -121,12 +121,6 @@ class SceneManager {
                 this.showScore = true;
             }
         }
-        /*} else if (this.game.click) {
-            this.game.clearDice();
-            this.overlay = [];
-            this.shouldThrow = true;
-            this.game.click = null;
-        }*/
     }
 
     draw(ctx) {
