@@ -53,7 +53,9 @@ class GameEngine {
             if (this.options.debugging) {
                 console.log("CLICK", getXandY(e));
             }
-            this.click = getXandY(e);
+            if (e.button == 0) {
+                this.click = getXandY(e);
+            }
         });
 
         this.ctx.canvas.addEventListener("contextmenu", e => {
@@ -112,6 +114,7 @@ class GameEngine {
 
         // TODO fix
         this.click = null;
+        this.rightclick = null;
     };
 
     clear() {

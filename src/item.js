@@ -1,26 +1,47 @@
 const ITEM_POOL = {
     commons: [
-        { sides: [1, 2, 3, 4, 5, 6] }
+        {
+            item: { sides: [1, 3, 6, 4, 5, 2] },
+            cost: 1
+        }
     ],
     uncommons: [
-        { sides: [2, 2, 3, 4, 6, 6] }
+        {
+            item: { sides: [2, 3, 6, 4, 4, 2] },
+            cost: 1
+        }
     ],
     rares: [
-        { sides: [4, 4, 5, 5, 6, 6] }
+        {
+            item: { sides: [6, 6, 6, 6, 6, 6] },
+            cost: 1
+        }
     ]
 };
 
+ITEM_POOL.dropCommon = () => {
+    return ITEM_POOL.commons[getRandomInt(ITEM_POOL.commons.length - 1)];
+}
+ITEM_POOL.dropUncommon = () => {
+    return ITEM_POOL.uncommons[getRandomInt(ITEM_POOL.uncommons.length - 1)]
+}
+ITEM_POOL.dropRare = () => {
+    return ITEM_POOL.rares[getRandomInt(ITEM_POOL.rares.length - 1)];
+}
+
 class Item {
-    constructor(game, scene, loc, size, rarity) {
-        Object.assign(this, { game, scene, rarity });
+    constructor(game, scene, shop, loc, size, rarity) {
+        Object.assign(this, { game, shop, scene, rarity });
 
         if (this.rarity == 'common') {
-            this.item = ITEM_POOL.commons[getRandomInt(ITEM_POOL.commons.length - 1)]
+            this.drop = ITEM_POOL.dropCommon();
         } else if (this.rarity == 'uncommon') {
-            this.item = ITEM_POOL.uncommons[getRandomInt(ITEM_POOL.uncommons.length - 1)]
+            this.drop = ITEM_POOL.dropUncommon();
         } else {
-            this.item = ITEM_POOL.rares[getRandomInt(ITEM_POOL.rares.length - 1)]
+            this.drop = ITEM_POOL.dropRare();
         }
+        this.item = this.drop.item;
+        this.cost = this.drop.cost;
         this.taken = false;
         this.width = size.width;
         this.height = size.height;
@@ -45,13 +66,19 @@ class Item {
     update() {
         if (this.game.click) {
             const e = this.game.click;
-            const diceSlotsHaveRoom = this.scene.diceSlotsUnlocked[this.scene.dice.length];
-            if (e.x >= this.x && e.x <= this.x + this.width && e.y >= this.y && e.y <= this.y + this.height
-                    && diceSlotsHaveRoom) {
+            if (e.x >= this.x && e.x <= this.x + this.width && e.y >= this.y && e.y <= this.y + this.height && this.scene.gold >= this.cost && !this.disableBuy) {
+
+                const diceSlotsHaveRoom = this.scene.diceSlotsUnlocked[this.scene.dice.length];
                 
-                this.scene.dice.push(this.item);
-                this.taken = true;
-                this.diceButt.removeFromWorld = true;
+                if (diceSlotsHaveRoom) {
+                    this.scene.dice.push(this.item);
+                    this.scene.gold -= this.cost;
+                    this.taken = true;
+                    this.diceButt.removeFromWorld = true;
+                } else {
+                    this.heldDice = new HoverDice(this.game, this.scene, this.diceButt, this.shop);
+                    this.game.addEntity(this.heldDice);
+                }
             }
         }
     }
@@ -74,14 +101,74 @@ class Item {
 
         
 
+        // background
         if (this.rarity == 'common') {
-            ctx.fillStyle = '#888888';
+            ctx.fillStyle = '#dddddd';
+            ctx.strokeStyle = '#888888';
         } else if (this.rarity == 'uncommon') {
-            ctx.fillStyle = '#0000FF';
+            ctx.fillStyle = '#ddddff';
+            ctx.strokeStyle = '#0000ff';
         } else if (this.rarity == 'rare') {
-            ctx.fillStyle = '#FF00FF';
+            ctx.fillStyle = '#ffccff';
+            ctx.strokeStyle = '#ff00ff';
         }
         ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.strokeRect(this.x, this.y, this.width, this.height);
+
+        
+        // name
+        ctx.fillStyle = ctx.strokeStyle;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'center';
+        ctx.font = '20pt monospace';
+        ctx.fillText(`${this.rarity} dice`, this.x + this.width * 0.5, this.y + 40);
+
+        // cost
+        ctx.fillStyle = '#ff6666';
+        ctx.fillText(this.cost, this.x + this.width * 0.5, this.y + this.height - 40);
+
+
         ctx.restore();
+    }
+}
+
+class HoverDice {
+    constructor(game, scene, origDiceButt, shop) {
+        Object.assign(this, { game, scene, origDiceButt, shop });
+        this.z = 100_005;
+        this.currDice = origDiceButt.dice;
+        origDiceButt.dice = undefined;
+
+        this.shop.diceButts.forEach(db => db.disableUnlock = true);
+        this.shop.items.forEach(db => db.disableBuy = true);
+        this.shop.highlightDice = true;
+    }
+
+    cleanup() {
+        this.shop.diceButts.forEach(db => db.disableUnlock = false);
+        this.shop.items.forEach(db => db.disableBuy = false);
+        this.shop.highlightDice = false;
+        this.removeFromWorld = true;
+    }
+
+    update() {
+        if (this.game.rightclick) {
+            this.origDiceButt.dice = this.currDice;
+            this.cleanup();
+        } else if (this.game.click) {
+            this.shop.diceButts.forEach(db => {
+                if (db.isHighlighted) {
+                    this.scene.dice[db.buttonIdx] = this.currDice;
+                    this.cleanup();
+                }
+            });
+        }
+    }
+
+    draw(ctx) {
+        const mx = this.game.mouse.x;
+        const my = this.game.mouse.y;
+        ctx.drawImage(this.origDiceButt.normalDiceImg, mx - 38 * 0.5, my - 38 * 0.5, 38, 38);
+
     }
 }

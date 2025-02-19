@@ -25,7 +25,7 @@ class Shop {
             } else if (quality + PARAMS.rareChance <= PARAMS.uncommonChance) {
                 rarity = 'uncommon';
             }
-            this.items[i] = new Item(game, scene, loc, size, rarity);
+            this.items[i] = new Item(game, scene, this, loc, size, rarity);
             this.game.addEntity(this.items[i]);
         }
 
@@ -67,6 +67,7 @@ class Shop {
         this.game.addEntity(this.startButton);
         this.game.addEntity(this.extraRollButton);
         
+        this.diceButts = [];
         for (let i = 0; i < 6; i++) {
             const button = new DiceButton(
                 game, scene,
@@ -75,6 +76,7 @@ class Shop {
                 i
             );
             this.game.addEntity(button);
+            this.diceButts.push(button);
         }
     }
 
@@ -83,6 +85,7 @@ class Shop {
     }
 
     draw(ctx) {
+        ctx.save();
         ctx.fillStyle = PARAMS.color.shopBackground;
         ctx.fillRect(this.x, this.y, this.width, this.height)
 
@@ -111,8 +114,15 @@ class Shop {
         ctx.textAlign = 'right';
         ctx.fillText(`${this.scene.extraRollCost}`, this.x + 585, this.y + this.height - 22);
 
+        
+        if (this.highlightDice) {
+            ctx.strokeStyle = '#ff0000';
+            ctx.strokeRect(this.x + 300 - 5, this.y + this.height - 90 - 5, 119 + 10, 79 + 10);
+        }
+
         // current dice
         
+        ctx.restore();
     }
 }
 

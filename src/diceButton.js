@@ -15,6 +15,7 @@ class DiceButton {
         this.x = loc.x;
         this.y = loc.y;
         this.z = 100_001;
+        this.disableUnlock = false;
 
         this.lockImg = ASSET_MANAGER.get('assets/lock.png');
         this.normalDiceImg = ASSET_MANAGER.get('assets/reroll.png');
@@ -33,7 +34,7 @@ class DiceButton {
             this.isHighlighted = false;
         }
 
-        if (this.isHighlighted && this.game.click && this.scene.gold >= this.cost && !this.scene.diceSlotsUnlocked[this.buttonIdx] && this.buttonIdx != -1) {
+        if (this.isHighlighted && this.game.click && this.scene.gold >= this.cost && !this.scene.diceSlotsUnlocked[this.buttonIdx] && this.buttonIdx != -1 && !this.disableUnlock) {
             this.scene.diceSlotsUnlocked[this.buttonIdx] = true;
             this.scene.gold -= this.cost;
         }
