@@ -19,14 +19,87 @@ const ITEM_POOL = {
     ]
 };
 
+ITEM_POOL._sideFromTable = table => {
+    assert(PARAMS.debug && table.reduce((acc, x) => acc + x, 0) == 1 && table.length == 6);
+    const rand = Math.random();
+    let sum = 0;
+
+    for (let i = 0; i < 6; i++) {
+        sum += table[i];
+        console.log(sum, rand);
+
+        if (rand <= sum)
+            return i + 1;
+    }
+
+    assert(false);
+}
+
+//
+//      DICE MODIFIERS
+// 
+//   Dice sides:
+// 1. 1-6 faces
+// 2. mult face
+// 3. empty face
+// 4. inverted face 1-6
+//
+//   Dice body:
+// 1. Fractured die - break up into pieces on hitting a wall
+// 2. Bouncy die - on hitting wall, add face val to gold
+// 3. Sky die - consumes die on hitting the ceiling for money
+// 4. Gold die - 
+// 5. Inverted die - augments inverted faces
+//
+//   Dice shader:
+// 1. Rainbow shader
+//
+//      CONSUMABLE
+// 1. Dice duplications
+// 2. Increase drop rates
+// 3. for each empty face in your hand 
+//
+//      OTHER IDEAS
+// 1. Seed feature
+// 2. score recap in shop
+// 3. info section
+// 4. mythic rarity
+// 5. consumables
+
 ITEM_POOL.dropCommon = () => {
     return ITEM_POOL.commons[getRandomInt(ITEM_POOL.commons.length - 1)];
 }
+
 ITEM_POOL.dropUncommon = () => {
     return ITEM_POOL.uncommons[getRandomInt(ITEM_POOL.uncommons.length - 1)]
 }
+
 ITEM_POOL.dropRare = () => {
-    return ITEM_POOL.rares[getRandomInt(ITEM_POOL.rares.length - 1)];
+    let drop = {};
+    const init = Math.random();
+    if (init <= 0.5) {
+        // normal rare dice 
+        drop.name = 'High-value Die';
+        drop.item = { type: 'dice', sides: []};
+        drop.cost = 0;
+        const table = [0.04, 0.06, 0.10, 0.10, 0.20, 0.50];
+        for (let i = 0; i < 6; i++) {
+            const side = ITEM_POOL._sideFromTable(table);
+            drop.item.sides.push(side);
+            drop.cost += 3 * side;
+        }
+    } else {
+        // All-side dice
+        drop.name = 'All-sided Die';
+        drop.item = { type: 'dice', sides: []};
+        const side = getRandomInt(6) + 1;
+        for (let i = 0; i < 6; i++) {
+            drop.item.sides.push(side);
+        }
+        drop.cost = 100 + 10 * side;
+    }
+
+    return drop;
 }
 
 class Item {
@@ -40,6 +113,7 @@ class Item {
         } else {
             this.drop = ITEM_POOL.dropRare();
         }
+        this.name = this.drop.name;
         this.item = this.drop.item;
         this.cost = this.drop.cost;
         this.taken = false;
@@ -121,7 +195,7 @@ class Item {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'center';
         ctx.font = '20pt monospace';
-        ctx.fillText(`${this.rarity} dice`, this.x + this.width * 0.5, this.y + 40);
+        ctx.fillText(this.name ? this.name : `${this.rarity} dice`, this.x + this.width * 0.5, this.y + 40);
 
         // cost
         ctx.fillStyle = '#ff6666';

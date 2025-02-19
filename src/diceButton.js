@@ -9,7 +9,7 @@ class DiceButton {
         }
 
         this.cost = PARAMS.diceSlotCosts[this.buttonIdx];
-        this.unlocked = false;
+        this.unlocked = this.scene.diceSlotsUnlocked[this.buttonIdx];
         this.width = size.width;
         this.height = size.height;
         this.x = loc.x;

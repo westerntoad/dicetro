@@ -61,3 +61,10 @@ const getDistance = (p1, p2) => {
 // undocumented :) (blame abe)
 const clamp = (min, val, max) => Math.min(max, Math.max(min, val));
 const getRandomInt = max => Math.floor(Math.random() * max); // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+
+// https://stackoverflow.com/a/15313435
+const assert = (condition, message) => {
+    if (PARAMS.debug && !condition) {
+        throw new Error(message || "Assertion failed");
+    }
+}

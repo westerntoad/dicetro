@@ -6,6 +6,7 @@ class Shop {
         this.x = (PARAMS.canvasWidth - this.width) / 2
         this.y = (PARAMS.canvasHeight - this.height) / 2
         this.z = 2;
+        this.infoHighlighted = false;
 
         this.numItems = 3;
         this.items = [];
@@ -81,7 +82,15 @@ class Shop {
     }
 
     update() {
-        // TODO
+        const mx = this.game.mouse.x;
+        const my = this.game.mouse.y;
+
+        // info highlight check
+        this.infoHighlighted = mx >= this.x + this.width - 60 && mx <= this.x + this.width - 25 && my >= this.y + 15 && my <= this.y + 50;
+        if (this.infoHighlighted && this.game.click) {
+            window.open('https://github.com/westerntoad/tcss491-dicetro', '_blank').focus();
+        }
+
     }
 
     draw(ctx) {
@@ -120,7 +129,12 @@ class Shop {
             ctx.strokeRect(this.x + 300 - 5, this.y + this.height - 90 - 5, 119 + 10, 79 + 10);
         }
 
-        // current dice
+        // info
+        ctx.fillStyle = this.infoHighlighted ? '#ff0000' : '#dddddd';
+        ctx.textBaseline = 'top';
+        ctx.textAlign = 'right';
+        ctx.font = '32pt monospace';
+        ctx.fillText('?', this.x + this.width - 25, this.y + 15);
         
         ctx.restore();
     }
