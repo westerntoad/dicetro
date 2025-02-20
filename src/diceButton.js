@@ -84,19 +84,33 @@ class DiceButton {
                 for (let i = 0; i < 4; i++) {
                     const x = dialogX + (w + 10) * i + (dialogWidth - (w + 20) * 3) * 0.5 - 13;
                     const y = dialogY + dialogHeight * 0.5 - h * 0.5;
-                    const sideVal = dice.sides[i] - 1;
-
-                    ctx.drawImage(this.scene.overlaySheet, 32 * sideVal, 0, 32, 32, x, y, w, h);
+                    if (dice.mult && dice.mult[i]) {
+                        const multIdx = Math.floor(Math.log2(dice.mult[i])) - 1;
+                        ctx.drawImage(this.scene.multSheet, 32 * multIdx, 0, 32, 32, x, y, w, h);
+                    } else {
+                        const sideVal = dice.sides[i] - 1;
+                        ctx.drawImage(this.scene.overlaySheet, 32 * sideVal, 0, 32, 32, x, y, w, h);
+                    }
                 }
 
                 const x = dialogX + (w + 10) + (dialogWidth - (w + 20) * 3) * 0.5 - 13;
                 let y = dialogY + dialogHeight * 0.5 - h * 0.5 - (h + 10);
-                let sideVal = dice.sides[4] - 1;
-                ctx.drawImage(this.scene.overlaySheet, 32 * sideVal, 0, 32, 32, x, y, w, h);
+                if (dice.mult && dice.mult[4]) {
+                    const multIdx = Math.floor(Math.log2(dice.mult[4])) - 1;
+                    ctx.drawImage(this.scene.multSheet, 32 * multIdx, 0, 32, 32, x, y, w, h);
+                } else {
+                    const sideVal = dice.sides[4] - 1;
+                    ctx.drawImage(this.scene.overlaySheet, 32 * sideVal, 0, 32, 32, x, y, w, h);
+                }
 
                 y = dialogY + dialogHeight * 0.5 - h * 0.5 + (h + 10);
-                sideVal = dice.sides[5] - 1;
-                ctx.drawImage(this.scene.overlaySheet, 32 * sideVal, 0, 32, 32, x, y, w, h);
+                if (dice.mult && dice.mult[5]) {
+                    const multIdx = Math.floor(Math.log2(dice.mult[5])) - 1;
+                    ctx.drawImage(this.scene.multSheet, 32 * multIdx, 0, 32, 32, x, y, w, h);
+                } else {
+                    const sideVal = dice.sides[5] - 1;
+                    ctx.drawImage(this.scene.overlaySheet, 32 * sideVal, 0, 32, 32, x, y, w, h);
+                }
             }
         }
 

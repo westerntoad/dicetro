@@ -24,8 +24,8 @@ class SceneManager {
         this.passives = [];
 
         this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');
+        this.multSheet = ASSET_MANAGER.get('assets/mult-overlay.png');
         this.game.click = null;
-
     }
 
     cloverScalar() {
@@ -66,7 +66,7 @@ class SceneManager {
         if (this.deathElapsed <= 4) {
             if (this.deathElapsed - this.deathSpawnCube >= 0.05) {
                 this.deathSpawnCube += 0.05;
-                const idxDice = new Dice(this.game, this, {x: PARAMS.canvasWidth / 2, y:PARAMS.canvasHeight - 200}, [1, 2, 3, 4, 5, 6]);
+                const idxDice = new Dice(this.game, this, {x: PARAMS.canvasWidth / 2, y:PARAMS.canvasHeight - 200}, { sides: [1, 2, 3, 4, 5, 6] });
                 idxDice.velocity.y = -Math.random() * 25;
                 idxDice.velocity.x = (Math.random() - 0.5) * 50;
                 this.game.addEntity(idxDice);
@@ -86,11 +86,13 @@ class SceneManager {
                     this.shouldThrow = true;
                     this.overlay = [];
                     this.dice = [{ sides: [1, 2, 3, 4, 5, 6] }];
+                    this.diceSlotsUnlocked = [ true, false, false, false, false, false ];
                     this.inShop = false;
-                    this.gold = 0;
+                    this.gold = PARAMS.debug ? 999_999 : 0;
                     this.rerolls = PARAMS.initialRolls;
                     this.score = 0;
                     this.extraRollCost = 1;
+                    this.passives = [];
                     this.previousExtraRollCost = 1;
                     this.diceControlDisabled = false;
 
@@ -118,7 +120,7 @@ class SceneManager {
                 this.firstClick = false;
             }
             for (let i = 0; i < this.dice.length; i++) {
-                let idxDice = new Dice(this.game, this, this.game.click, this.dice[i].sides);
+                let idxDice = new Dice(this.game, this, this.game.click, this.dice[i]);
                 this.game.addEntity(idxDice);
             }
             this.shouldThrow = false;
@@ -139,17 +141,27 @@ class SceneManager {
 
     draw(ctx) {
 
-        // overlay
         const overlayScale = 4;
         const size = 32 * overlayScale;
         for (let i = 0; i < this.overlay.length; i++) {
-            ctx.drawImage(this.overlaySheet,
-                32 * (this.overlay[i] - 1), 0,
-                32, 32,
-                Math.floor(((size * i) % PARAMS.canvasWidth) / size) * size,
-                Math.floor(size * i / PARAMS.canvasWidth) * size,
-                32 * overlayScale, 32 * overlayScale
-            );
+            if (this.overlay[i].mult) {
+                const multIdx = Math.floor(Math.log2(this.overlay[i].mult)) - 1;
+                ctx.drawImage(this.multSheet,
+                    32 * multIdx, 0,
+                    32, 32,
+                    Math.floor(((size * i) % PARAMS.canvasWidth) / size) * size,
+                    Math.floor(size * i / PARAMS.canvasWidth) * size,
+                    32 * overlayScale, 32 * overlayScale
+                );
+            } else {
+                ctx.drawImage(this.overlaySheet,
+                    32 * (this.overlay[i].val - 1), 0,
+                    32, 32,
+                    Math.floor(((size * i) % PARAMS.canvasWidth) / size) * size,
+                    Math.floor(size * i / PARAMS.canvasWidth) * size,
+                    32 * overlayScale, 32 * overlayScale
+                );
+            }
         }
 
         // felt table

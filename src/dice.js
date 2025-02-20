@@ -1,6 +1,8 @@
 class Dice {
-    constructor(game, scene, initial, sides) {
-        Object.assign(this, { game, scene, sides });
+    constructor(game, scene, initial, dice) {
+        Object.assign(this, { game, scene });
+        this.sides = dice.sides;
+        this.mult = dice.mult;
         this.isControlled = true;
         this.disabled = false;
         this.wasCalculated = false;
@@ -27,8 +29,10 @@ class Dice {
         this.offscreenCanvas.height = this.size;
         this.offscreenCtx = this.offscreenCanvas.getContext('2d');
         this.emptyDice = ASSET_MANAGER.get('assets/empty-dice.png');
-        this.horizontals = ASSET_MANAGER.get('assets/left-right-sides.png');
         this.verticals = ASSET_MANAGER.get('assets/top-sides.png');
+        this.horizontals = ASSET_MANAGER.get('assets/left-right-sides.png');
+        this.multVerticals = ASSET_MANAGER.get('assets/top-sides-mult.png');
+        this.multHorizontals = ASSET_MANAGER.get('assets/left-right-sides-mult.png');
         this.diceSounds = [
             'assets/diceland1.wav',
             'assets/diceland2.wav',
@@ -51,6 +55,9 @@ class Dice {
         while (roll1 == roll3 || roll2 == roll3)
             roll3 = getRandomInt(6);
 
+        this.nortIdx = roll1;
+        this.eastIdx = roll2;
+        this.westIdx = roll3;
         this.currFaces.north = this.sides[roll1];
         this.currFaces.east  = this.sides[roll2];
         this.currFaces.west  = this.sides[roll3];
@@ -85,7 +92,11 @@ class Dice {
             this.velocity.y = this.velocity.y / (PARAMS.drag * 1.5);
 
             if (!this.wasCalculated) {
-                this.scene.overlay.push(this.currFaces.north);
+                if (this.mult && this.mult[this.nortIdx]) {
+                    this.scene.overlay.push({ val: this.sides[this.nortIdx], mult: this.mult[this.nortIdx] });
+                } else {
+                    this.scene.overlay.push({ val: this.sides[this.nortIdx] });
+                }
                 this.wasCalculated = true;
                 const landingSound = this.diceSounds[getRandomInt(3)]
                 ASSET_MANAGER.playAsset(landingSound);
@@ -132,11 +143,27 @@ class Dice {
         // draw empty dice
         this.offscreenCtx.drawImage(this.emptyDice, 0, 0, this.size, this.size);
         // draw top face
-        this.offscreenCtx.drawImage(this.verticals, 0, (this.currFaces.north - 1) * 14, 26, 14, 3, 1, 26, 14);
+        if (this.mult && this.mult[this.nortIdx]) {
+            const multIdx = Math.floor(Math.log2(this.mult[this.nortIdx])) - 1;
+            this.offscreenCtx.drawImage(this.multVerticals, 0, multIdx * 14, 26, 14, 3, 1, 26, 14);
+        } else {
+            this.offscreenCtx.drawImage(this.verticals, 0, (this.currFaces.north - 1) * 14, 26, 14, 3, 1, 26, 14);
+        }
         // draw left face
-        this.offscreenCtx.drawImage(this.horizontals, (this.currFaces.west - 1) * 14, 0, 14, 21, 1, 9, 14, 21);
+        if (this.mult && this.mult[this.westIdx]) {
+            const multIdx = Math.floor(Math.log2(this.mult[this.westIdx])) - 1;
+            this.offscreenCtx.drawImage(this.multHorizontals, multIdx * 14, 0, 14, 21, 1, 9, 14, 21);
+        } else {
+            this.offscreenCtx.drawImage(this.horizontals, (this.currFaces.west - 1) * 14, 0, 14, 21, 1, 9, 14, 21);
+        }
         // draw right face
-        this.offscreenCtx.drawImage(this.horizontals, (this.currFaces.east - 1) * 14, 21, 14, 21, 17, 9, 14, 21);
+        if (this.mult && this.mult[this.eastIdx]) {
+            const multIdx = Math.floor(Math.log2(this.mult[this.westIdx])) - 1;
+            this.offscreenCtx.drawImage(this.multHorizontals, multIdx * 14, 21, 14, 21, 17, 9, 14, 21);
+        } else {
+            this.offscreenCtx.drawImage(this.horizontals, (this.currFaces.east - 1) * 14, 21, 14, 21, 17, 9, 14, 21);
+        }
+
         this.offscreenCtx.restore();
 
         ctx.drawImage(this.offscreenCanvas, this.x, this.y, this.width, this.height);

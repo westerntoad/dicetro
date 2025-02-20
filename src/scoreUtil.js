@@ -30,7 +30,7 @@ const score = dice => {
     const countValue = val => {
         let acc = 0;
         dice.forEach(el => {
-            if (el == val)
+            if (el.val == val)
                 acc++;
         });
         return acc;

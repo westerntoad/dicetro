@@ -67,13 +67,28 @@ ITEM_POOL.dropCommon = () => {
     let drop = {};
     const init = Math.random();
 
-    if (init <= 0.5) {
+    if (init <= 0.3) {
         drop.name = 'Low-value Die'
         drop.item = { type: 'dice', sides: [] };
 
         const table = [0.20, 0.20, 0.20, 0.15, 0.15, 0.10];
         drop.item.sides = ITEM_POOL._allSidesFromTable(table);
         drop.cost = Math.floor(drop.item.sides.reduce((acc, x) => acc + x, 0) / 2 / 5) * 5;
+    } else if (init <= 1) {
+        drop.name = 'Low Mult Die';
+        drop.item = { type: 'dice', sides: [], mult: [] };
+
+        const table = [0.20, 0.20, 0.20, 0.15, 0.15, 0.10];
+        drop.item.sides = ITEM_POOL._allSidesFromTable(table);
+        const i = getRandomInt(6) + 1;
+        drop.item.sides[i] = 0;
+        drop.item.mult[i] = 2;
+        drop.cost = Math.floor(drop.item.sides.reduce((acc, x) => acc + x, 0) / 2 / 5) * 5;
+        // debug
+        for (let i = 0; i < 6; i++) {
+            drop.item.sides[i] = 0;
+            drop.item.mult[i] = 2;
+        }
     } else {
         drop.name = 'Normal Die';
         drop.item = { type: 'dice', sides: [] };
