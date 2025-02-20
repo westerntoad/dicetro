@@ -43,9 +43,9 @@ class Shop {
                 if (newCost > this.scene.gold)
                     return;
 
+                this.scene.gold -= this.scene.extraRollCost;
                 this.scene.previousExtraRollCost = this.scene.extraRollCost;
                 this.scene.extraRollCost = newCost;
-                this.scene.gold -= newCost;
                 this.scene.rerolls += 1;
             }
         );

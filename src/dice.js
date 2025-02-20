@@ -70,8 +70,9 @@ class Dice {
     }
 
     update() {
-        this.x += this.velocity.x;
-        this.y += this.velocity.y;
+        const timeScalar = this.game.clockTick * 80;
+        this.x += this.velocity.x * timeScalar;
+        this.y += this.velocity.y * timeScalar;
 
         if (this.game.mouse.isDown && this.game.mouse.x && this.isControlled && !this.scene.diceControlDisabled) {
             const dx = this.game.mouse.x - (this.x + (this.width / 2));
