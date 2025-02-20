@@ -19,10 +19,25 @@ class SceneManager {
         this.extraRollCost = 1;
         this.previousExtraRollCost = 1;
         this.diceControlDisabled = false;
+        this.uncommonChance = PARAMS.baseUncommonChance;
+        this.rareChance = PARAMS.baseRareChance;
+        this.passives = [];
 
         this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');
         this.game.click = null;
 
+    }
+
+    cloverScalar() {
+        for (let i = 0; i < this.passives.length; i++) {
+            if (this.passives[i].name == 'Four-leaf Clover') {
+                let scalar = Math.pow(this.passives[i].effect, this.passives[i].count);
+                console.log(scalar);
+                return scalar;
+            }
+        }
+        return 1;
+        
     }
 
     allDiceScored() {

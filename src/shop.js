@@ -10,6 +10,7 @@ class Shop {
 
         this.numItems = 3;
         this.items = [];
+
         for (let i = 0; i < this.numItems; i++) {
             const size = {
                 width: 200,
@@ -21,9 +22,9 @@ class Shop {
             };
             let rarity = 'common';
             const quality = Math.random();
-            if (quality <= PARAMS.rareChance) {
+            if (quality <= scene.rareChance * this.scene.cloverScalar()) {
                 rarity = 'rare';
-            } else if (quality + PARAMS.rareChance <= PARAMS.uncommonChance) {
+            } else if (quality + scene.rareChance * this.scene.cloverScalar() <= scene.uncommonChance * this.scene.cloverScalar()) {
                 rarity = 'uncommon';
             }
             this.items[i] = new Item(game, scene, this, loc, size, rarity);
@@ -79,6 +80,24 @@ class Shop {
             this.game.addEntity(button);
             this.diceButts.push(button);
         }
+
+        this.passives = [];
+        this.scene.passives.forEach(item => this.addPassive(item));
+    }
+
+    addPassive(item) {
+        
+        const i = this.passives.length;
+        const w = 40;
+        const h = 40;
+        const x = this.x + 18 + (w + 5) * (i % 2);
+        const y = this.y + 50 + (h + 5) * Math.floor(i / 2);
+        this.passives.push(new Icon(
+            this.game, this.scene, item,
+            x, y, w, h
+        ));
+
+        this.game.addEntity(this.passives[i]);
     }
 
     update() {
@@ -91,6 +110,7 @@ class Shop {
             window.open('https://github.com/westerntoad/tcss491-dicetro/wiki', '_blank').focus();
         }
 
+        this.startButton.color = this.scene.rerolls == 0 ? '#ff0000' : undefined;
     }
 
     draw(ctx) {
@@ -136,6 +156,15 @@ class Shop {
         ctx.font = '32pt monospace';
         ctx.fillText('?', this.x + this.width - 25, this.y + 15);
         
+        // debug
+
+        ctx.fillStyle = '#dddddd';
+        const x = this.x + 18;
+        const y = this.y + 50;
+        const w = 45 * 2
+        const h = 300
+        ctx.fillRect(x, y, w, h);
+
         ctx.restore();
     }
 }
@@ -166,7 +195,7 @@ class Button {
     }
 
     draw(ctx) {
-        ctx.fillStyle = this.main;
+        ctx.fillStyle = this.color ? this.color : this.main;
         ctx.fillRect(this.x, this.y, this.width, this.height);
 
         ctx.fillStyle = '#000000';
