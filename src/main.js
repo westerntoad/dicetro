@@ -1,7 +1,7 @@
 const gameEngine = new GameEngine();
 
 const PARAMS = {
-    debug: true,
+    debug: false,
     initialRolls: 2, // in actuality, 3
     diceSlotCosts: [0, 5, 25, 100, 500, 5_000],
     speed: 75,
