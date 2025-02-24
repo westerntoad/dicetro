@@ -36,6 +36,7 @@
 // 6.  - increase value of all hands by a flat amount
 // 7.  - increase value of all hands by a scalar amount
 // 8.  - empty faces score special
+// 9. Fissure - fractured die split into additional copies
 
 ITEM_POOL = {};
 

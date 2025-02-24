@@ -41,6 +41,7 @@ const ASSET_MANAGER = new AssetManager();
 
 ASSET_MANAGER.queue('assets/empty-dice.png');
 ASSET_MANAGER.queue('assets/bouncy-dice.png');
+ASSET_MANAGER.queue('assets/fractured-mod.png');
 ASSET_MANAGER.queue('assets/left-right-sides.png');
 ASSET_MANAGER.queue('assets/top-sides.png');
 ASSET_MANAGER.queue('assets/left-right-sides-mult.png');

@@ -6,10 +6,7 @@ class ScoreGUI {
         this.gold = 0;
         this.elapsed = 0;
         [this.handName, this.handDesc, this.handMult] = score(dice);
-        this.dice.forEach(die => {
-            if (die.mult)
-                this.handMult += die.mult;
-        });
+        this.roundMult = this.handMult += scene.roundMult;
         this.roundGold = scene.roundGold;
         this.gold += scene.roundGold * this.handMult;
     }

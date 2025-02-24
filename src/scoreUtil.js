@@ -53,7 +53,7 @@ const score = dice => {
     }
 
     const face = highestCountIdx;
-    if (highestCount == 6) {
+    if (highestCount >= 6) {
         return ["Six of a kind", `REPLACE`, 32];
     } else if (highestCount == 5) {
         return ["Five of a kind", `REPLACE`, 16];

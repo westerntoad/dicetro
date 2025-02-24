@@ -1,27 +1,33 @@
 class Dice {
-    constructor(game, scene, initial, dice) {
-        Object.assign(this, { game, scene });
+    constructor(game, scene, initial, dice, deterministicTrajectory, scale) {
+        Object.assign(this, { game, scene, dice });
         this.sides = dice.sides;
         this.mult = dice.mult;
         this.body = dice.body ? dice.body : "normal";
+        this.mod = dice.mod ? dice.mod : "none";
         this.isControlled = true;
         this.disabled = false;
         this.wasCalculated = false;
-        this.scale = 3;
+        this.scale = scale ? scale : 3;
         this.size = 32;
         this.width = this.size * this.scale;
         this.height = this.size * this.scale;
 
         // completely needless random polar coord generation
-        const angle = Math.random() * 2 * Math.PI;
-        const r = 100;
-        this.x = initial.x + r * Math.cos(angle) - this.width / 2;
-        this.y = initial.y + r * Math.sin(angle) - this.height / 2;
-        this.velocity = {
-            x: Math.random() * 25,
-            y: Math.random() * 25
-        };
-        this.z = 1 + 1 / this.y;
+        if (!deterministicTrajectory) {
+            const angle = Math.random() * 2 * Math.PI;
+            const r = 100;
+            this.x = initial.x + r * Math.cos(angle) - this.width / 2;
+            this.y = initial.y + r * Math.sin(angle) - this.height / 2;
+            this.velocity = {
+                x: Math.random() * 25,
+                y: Math.random() * 25
+            };
+            this.z = 1 + 1 / this.y;
+        } else {
+            this.x = initial.x;
+            this.y = initial.y;
+        }
 
         this.rotation = 0;
         this.rotationElapsedTime = 0;
@@ -34,6 +40,7 @@ class Dice {
         } else {
             this.bodyImg = ASSET_MANAGER.get('assets/empty-dice.png');
         }
+        this.fracturedImg = ASSET_MANAGER.get('assets/fractured-mod.png');
         this.verticals = ASSET_MANAGER.get('assets/top-sides.png');
         this.horizontals = ASSET_MANAGER.get('assets/left-right-sides.png');
         this.multVerticals = ASSET_MANAGER.get('assets/top-sides-mult.png');
@@ -49,11 +56,18 @@ class Dice {
         this.roll();
     }
 
-    showGoldParticle(amt) {
+    showGoldParticle() {
         const orig = { x: this.x, y: this.y }
         const dest = { x: orig.x, y: orig.y - 100 }
-        new Particle(this.game, orig, dest, 1, `$${amt}`, 'yellow');
-        this.scene.roundGold += amt;
+        if (this.mult && this.mult[this.nortIdx] != 0) {
+            const amt = this.mult[this.nortIdx];
+            this.scene.roundMult += amt;
+            new Particle(this.game, orig, dest, 1, `×${amt}`, 'red');
+        } else {
+            const amt = this.sides[this.nortIdx];
+            this.scene.roundGold += amt;
+            new Particle(this.game, orig, dest, 1, `$${amt}`, 'yellow');
+        }
     }
 
     roll() {
@@ -101,7 +115,7 @@ class Dice {
         if (this.onFloor()) {
             // bounce off the ground
             if (this.body == "bouncy" && !this.wasCalculated && this.velocity.y > 20) {
-                this.showGoldParticle(this.sides[this.nortIdx]);
+                this.showGoldParticle();
                 this.y -= 40;
                 this.velocity.y *= -0.5;
                 return;
@@ -117,7 +131,7 @@ class Dice {
                     this.scene.overlay.push({ val: this.sides[this.nortIdx] });
                 }
                 this.wasCalculated = true;
-                this.showGoldParticle(this.sides[this.nortIdx]);
+                this.showGoldParticle();
                 const landingSound = this.diceSounds[getRandomInt(3)]
                 ASSET_MANAGER.playAsset(landingSound);
                 ASSET_MANAGER.get(landingSound).volume = 1;
@@ -143,6 +157,25 @@ class Dice {
             this.y = clamp(0, this.y, PARAMS.canvasHeight - this.height);
         }
         if (this.x <= 0 || this.x >= PARAMS.canvasWidth - this.width) {
+            if (this.mod == "fractured") {
+                this.removeFromWorld = true;
+                for (let i = 0; i < 2; i++) {
+                    const initial = {
+                        x: clamp(0, this.x + (Math.random() - 0.5) * 20, PARAMS.canvasWidth - this.width),
+                        y: this.y
+                    }
+                    //constructor(game, scene, initial, dice, deterministicTrajectory)
+                    const newDie = new Dice(this.game, this.scene, initial, { ...this.dice, mod: undefined }, true, 2);
+                    newDie.velocity = {
+                        x: -this.velocity.x * PARAMS.bounce + (Math.random() - 0.5) * 20,
+                        y: this.velocity.y + (Math.random() - 0.5) * 20
+                    };
+                    this.game.addEntity(newDie);
+                }
+
+                return;
+            }
+
             this.velocity.x = -this.velocity.x * PARAMS.bounce;
 
             this.x = clamp(0, this.x, PARAMS.canvasWidth - this.width);
@@ -162,6 +195,9 @@ class Dice {
 
         // draw empty dice
         this.offscreenCtx.drawImage(this.bodyImg, 0, 0, this.size, this.size);
+        if (this.mod == "fractured") {
+            this.offscreenCtx.drawImage(this.fracturedImg, 0, 0, this.size, this.size);
+        }
         // draw top face
         if (this.mult && this.mult[this.nortIdx]) {
             const multIdx = Math.floor(Math.log2(this.mult[this.nortIdx])) - 1;

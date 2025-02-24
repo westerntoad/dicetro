@@ -6,9 +6,14 @@ class SceneManager {
         this.firstClick = true;
         this.overlay = [];
         this.roundGold = 0;
+        this.roundMult = 0;
         // weird order to make sure dice are displayed correctly
         if (PARAMS.debug) {
-            this.dice = [ { sides: [1, 3, 6, 4, 5, 2] }, { sides: [1, 3, 6, 4, 5, 2], body: "bouncy" } ];
+            this.dice = [
+                //{ sides: [1, 3, 6, 4, 5, 2] },
+                //{ sides: [1, 3, 6, 4, 5, 2], body: "bouncy" },
+                { sides: [0, 0, 0, 0, 0, 0], mult: [2, 2, 2, 2, 2, 2], body: "bouncy", mod: "fractured" }
+            ];
         } else {
             this.dice = [ { sides: [1, 3, 6, 4, 5, 2] } ];
         }
@@ -146,6 +151,8 @@ class SceneManager {
                 this.gold += this.scoreGUI.gold;
                 this.shownScore = false;
                 this.hideScore();
+                this.roundGold = 0;
+                this.roundMult = 0;
                 this.inShop = true;
                 this.game.addEntity(new Shop(this.game, this));
                 this.shopDelayElapsed = 0;
