@@ -5,15 +5,20 @@ class SceneManager {
         this.shouldThrow = true;
         this.firstClick = true;
         this.overlay = [];
+        this.roundGold = 0;
         // weird order to make sure dice are displayed correctly
-        this.dice = [ {sides: [1, 3, 6, 4, 5, 2]} ];
+        if (PARAMS.debug) {
+            this.dice = [ { sides: [1, 3, 6, 4, 5, 2] }, { sides: [1, 3, 6, 4, 5, 2], body: "bouncy" } ];
+        } else {
+            this.dice = [ { sides: [1, 3, 6, 4, 5, 2] } ];
+        }
         this.inShop = false;
         this.scoreDelay = 0;
         this.shopDelay = 1.25;
-        this.diceSlotsUnlocked = [ true, false, false, false, false, false ];
+        this.diceSlotsUnlocked = [ true, true, false, false, false, false ];
         //this.shopDelay = 1000000000;
         this.shopDelayElapsed = 0;
-        this.gold = PARAMS.debug ? 999_999 : 0;
+        this.gold = PARAMS.debug ? 0 : 0;
         this.rerolls = PARAMS.initialRolls;
         this.score = 1;
         this.extraRollCost = 1;
@@ -25,6 +30,7 @@ class SceneManager {
 
         this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');
         this.multSheet = ASSET_MANAGER.get('assets/mult-overlay.png');
+        this.particles = [];
         this.game.click = null;
     }
 
@@ -109,6 +115,16 @@ class SceneManager {
         }
     }
 
+    showScore() {
+        this.scoreGUI = new ScoreGUI(this.game, this, this.overlay);
+        this.game.addEntity(this.scoreGUI);
+    }
+
+    hideScore() {
+        this.scoreGUI.removeFromWorld = true;
+        this.scoreGUI = undefined;
+    }
+
     update() {
         if (this.rerolls < 0) {
             this.handleDeath();
@@ -126,15 +142,20 @@ class SceneManager {
             this.shouldThrow = false;
         } else if (!this.inShop && this.allDiceScored() && !this.shouldThrow) {
             this.shopDelayElapsed += this.game.clockTick;
-            if (this.shopDelayElapsed >= this.shopDelay + this.scoreDelay) {
-                this.showScore = false;
+            if (this.scoreGUI && this.scoreGUI.isDone) {
+                this.gold += this.scoreGUI.gold;
+                this.shownScore = false;
+                this.hideScore();
                 this.inShop = true;
                 this.game.addEntity(new Shop(this.game, this));
                 this.shopDelayElapsed = 0;
-            } else if (this.shopDelayElapsed >= this.scoreDelay && !this.showScore) {
-                [this.handName, this.handDesc, this.scoreValue] = score(this.overlay);
-                this.gold += this.scoreValue;
-                this.showScore = true;
+            } else if (this.shopDelayElapsed >= this.scoreDelay && !this.shownScore) {
+                this.showScore();
+                this.shownScore = true;
+                /*[this.handName, this.handDesc, this.handMult] = score(this.overlay);
+                this.handSum = this.overlay.reduce((acc,x) => acc + x.val, 0);
+                this.gold += this.handSum * this.handMult;
+                this.showScore = true;*/
             }
         }
     }
@@ -169,14 +190,14 @@ class SceneManager {
         ctx.fillRect(0, PARAMS.canvasHeight - 100, PARAMS.canvasWidth, 100)
 
         // show score
-        if (this.showScore) {
+        /*if (this.showScore) {
             ctx.textAlign = 'center';
             ctx.font = 'bold 80pt Comic Sans';
             ctx.fillText(this.handName, PARAMS.canvasWidth / 2, PARAMS.canvasHeight / 2 - 50);
             ctx.font = '30pt Courier';
         ctx.fillStyle = '#ffffff';
-            ctx.fillText(`${this.handDesc} = ${this.scoreValue}`, PARAMS.canvasWidth / 2, PARAMS.canvasHeight / 2 + 50);
-        }
+            ctx.fillText(`${this.handSum} × ${this.handMult}`, PARAMS.canvasWidth / 2, PARAMS.canvasHeight / 2 + 50);
+        }*/
 
         // game over
         if (this.rerolls < 0) {

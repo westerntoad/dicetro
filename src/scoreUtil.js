@@ -1,5 +1,4 @@
 
-const sum = (arr) => arr.reduce((acc, x) => acc + x, 0);
 
 /*
  * Takes an array of rolled dice values & returns both a string stating the
@@ -12,16 +11,16 @@ const sum = (arr) => arr.reduce((acc, x) => acc + x, 0);
  * ```
  *
  * ALL HANDS (ordered least to greatest in value):
- *  Single              (value of face)
- *  Pair                (sum * 2)
- *  Three of a kind     (sum * 3)
- *  Two-pair            (sum * 3)
- *  Full house          (sum * 4)
- *  Four of a kind      (sum * 8)
- *  Five of a kind      (sum * 12)
- *  Three pairs         ((pair1 sum) * (pair2 sum) * (pair3 sum))
- *  Pair of triples     ((triplet1 sum) * (triplet2 sum) * 4)
- *  Six of a kind       (val * 216)
+ *  Single              1
+ *  Pair                2
+ *  Three of a kind     4
+ *  Two-pair            4
+ *  Full house          8
+ *  Four of a kind      12
+ *  Five of a kind      16
+ *  Three pairs         24
+ *  Pair of triples     24
+ *  Six of a kind       32
  */
 const score = dice => {
     if (dice.length == 0)
@@ -55,11 +54,11 @@ const score = dice => {
 
     const face = highestCountIdx;
     if (highestCount == 6) {
-        return ["Six of a kind", `${face} × 6^3`, face * 216];
+        return ["Six of a kind", `REPLACE`, 32];
     } else if (highestCount == 5) {
-        return ["Five of a kind", `(${face} + ${face} + ${face} + ${face} + ${face}) × 12`, face * 5 * 12];
+        return ["Five of a kind", `REPLACE`, 16];
     } else if (highestCount == 4) {
-        return ["Four of a kind", `(${face} + ${face} + ${face} + ${face}) × 8`, face * 4 * 8];
+        return ["Four of a kind", `REPLACE`, 12];
     } else if (highestCount == 3 && highestCountCount == 2) {
         let face2 = 0;
         for (let i = highestCountIdx - 1; i >= 1; i--) {
@@ -68,16 +67,16 @@ const score = dice => {
                 break;
             }
         }
-        return ["Pair of triples", `(${face} + ${face} + ${face}) × (${face2} + ${face2} + ${face2}) × 4`, (face * 3 + face2 * 3) * 4];
+        return ["Pair of triples", `REPLACE`, 24];
     } else if (highestCount == 3) {
         // annoying full house edge case
         for (let i = highestCountIdx - 1; i >= 1; i--) {
             if (counts[i] == 2) {
                 const face2 = i;
-                return ["Full house", `(${face} + ${face} + ${face} + ${face2} + ${face2}) × 4`, (face * 3 + face2 * 2) * 4];
+                return ["Full house", `REPLACE`, 8];
             }
         }
-        return ["Three of a kind", `(${face} + ${face} + ${face}) × 3`, face * 3 * 3];
+        return ["Three of a kind", `REPLACE`, 4];
     } else if (highestCount == 2 && highestCountCount == 3) {
         let face2 = 0;
         for (let i = highestCountIdx - 1; i >= 1; i--) {
@@ -93,7 +92,7 @@ const score = dice => {
                 break;
             }
         }
-        return ["Three pair", `(${face} + ${face}) × (${face2} + ${face2}) × (${face3} + ${face3})`, face * 2 + face2 * 2 + face3 * 2];
+        return ["Three pair", `REPLACE`, 24];
     } else if (highestCount == 2 && highestCountCount == 2) {
         let face2 = 0;
         for (let i = highestCountIdx - 1; i >= 1; i--) {
@@ -102,11 +101,13 @@ const score = dice => {
                 break;
             }
         }
-        return ["Two pair", `(${face} + ${face} + ${face2} + ${face2}) × 3`, (face * 2 + face2 * 2) * 3];
+        return ["Two pair", `REPLACE`, 4];
     } else if (highestCount == 2) {
-        return ["Pair", `(${face} + ${face}) × 2`, face * 2 * 2];
+        return ["Pair", `REPLACE`, 2];
+    } else if (highestCount == 1) {
+        return ["Single", `REPLACE`, 1];
     } else {
-        return ["Single", `${face}`, face];
+        return ["None", `REPLACE`, 0];
     }
 
 

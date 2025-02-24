@@ -18,9 +18,6 @@
 //
 //      CONSUMABLE
 // 1. Dice duplications
-// 2. Increase drop rates
-// 3. for each empty face in your hand 
-// 4. right click to shoot the dice at high speed ?
 //
 //      OTHER IDEAS
 // 1. Seed feature
@@ -35,7 +32,10 @@
 // 2.  - gain flat money for lower money later
 // 3.  - lose flat money for more money later
 // 4.  - mult sides give more mult
-// 5.
+// 5.  - all odd sides are scored as a 5 and even sides scored as a 6
+// 6.  - increase value of all hands by a flat amount
+// 7.  - increase value of all hands by a scalar amount
+// 8.  - empty faces score special
 
 ITEM_POOL = {};
 

@@ -3,6 +3,7 @@ class Dice {
         Object.assign(this, { game, scene });
         this.sides = dice.sides;
         this.mult = dice.mult;
+        this.body = dice.body ? dice.body : "normal";
         this.isControlled = true;
         this.disabled = false;
         this.wasCalculated = false;
@@ -28,7 +29,11 @@ class Dice {
         this.offscreenCanvas.width = this.size;
         this.offscreenCanvas.height = this.size;
         this.offscreenCtx = this.offscreenCanvas.getContext('2d');
-        this.emptyDice = ASSET_MANAGER.get('assets/empty-dice.png');
+        if (dice.body == "bouncy") {
+            this.bodyImg = ASSET_MANAGER.get('assets/bouncy-dice.png');
+        } else {
+            this.bodyImg = ASSET_MANAGER.get('assets/empty-dice.png');
+        }
         this.verticals = ASSET_MANAGER.get('assets/top-sides.png');
         this.horizontals = ASSET_MANAGER.get('assets/left-right-sides.png');
         this.multVerticals = ASSET_MANAGER.get('assets/top-sides-mult.png');
@@ -42,6 +47,13 @@ class Dice {
 
         this.currFaces = {}
         this.roll();
+    }
+
+    showGoldParticle(amt) {
+        const orig = { x: this.x, y: this.y }
+        const dest = { x: orig.x, y: orig.y - 100 }
+        new Particle(this.game, orig, dest, 1, `$${amt}`, 'yellow');
+        this.scene.roundGold += amt;
     }
 
     roll() {
@@ -87,6 +99,13 @@ class Dice {
         }
 
         if (this.onFloor()) {
+            // bounce off the ground
+            if (this.body == "bouncy" && !this.wasCalculated && this.velocity.y > 20) {
+                this.showGoldParticle(this.sides[this.nortIdx]);
+                this.y -= 40;
+                this.velocity.y *= -0.5;
+                return;
+            }
             this.rotation = 0;
             this.velocity.x = this.velocity.x /  PARAMS.drag;
             this.velocity.y = this.velocity.y / (PARAMS.drag * 1.5);
@@ -98,6 +117,7 @@ class Dice {
                     this.scene.overlay.push({ val: this.sides[this.nortIdx] });
                 }
                 this.wasCalculated = true;
+                this.showGoldParticle(this.sides[this.nortIdx]);
                 const landingSound = this.diceSounds[getRandomInt(3)]
                 ASSET_MANAGER.playAsset(landingSound);
                 ASSET_MANAGER.get(landingSound).volume = 1;
@@ -141,7 +161,7 @@ class Dice {
         this.offscreenCtx.translate(-this.size / 2, -this.size / 2);
 
         // draw empty dice
-        this.offscreenCtx.drawImage(this.emptyDice, 0, 0, this.size, this.size);
+        this.offscreenCtx.drawImage(this.bodyImg, 0, 0, this.size, this.size);
         // draw top face
         if (this.mult && this.mult[this.nortIdx]) {
             const multIdx = Math.floor(Math.log2(this.mult[this.nortIdx])) - 1;
