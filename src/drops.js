@@ -13,8 +13,9 @@
 // 4. Gold die - 
 // 5. Inverted die - augments inverted faces
 //
-//   Dice shader:
+//   Dice modifier:
 // 1. Rainbow shader
+// 2. Gives money every second in the air
 //
 //      CONSUMABLE
 // 1. Dice duplications
@@ -37,6 +38,7 @@
 // 7.  - increase value of all hands by a scalar amount
 // 8.  - empty faces score special
 // 9. Fissure - fractured die split into additional copies
+// 10. - increases value of golden dice
 
 ITEM_POOL = {};
 

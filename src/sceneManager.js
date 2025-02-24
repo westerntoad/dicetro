@@ -12,7 +12,7 @@ class SceneManager {
             this.dice = [
                 //{ sides: [1, 3, 6, 4, 5, 2] },
                 //{ sides: [1, 3, 6, 4, 5, 2], body: "bouncy" },
-                { sides: [0, 0, 0, 0, 0, 0], mult: [2, 2, 2, 2, 2, 2], body: "bouncy", mod: "fractured" }
+                { sides: [1, 3, 6, 4, 5, 2], mult: [0, 0, 0, 0, 0, 0], body: "gold", mod: "none" }
             ];
         } else {
             this.dice = [ { sides: [1, 3, 6, 4, 5, 2] } ];

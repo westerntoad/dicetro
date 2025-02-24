@@ -37,6 +37,8 @@ class Dice {
         this.offscreenCtx = this.offscreenCanvas.getContext('2d');
         if (dice.body == "bouncy") {
             this.bodyImg = ASSET_MANAGER.get('assets/bouncy-dice.png');
+        } else if (dice.body == "gold") {
+            this.bodyImg = ASSET_MANAGER.get('assets/gold-dice.png');
         } else {
             this.bodyImg = ASSET_MANAGER.get('assets/empty-dice.png');
         }
@@ -64,7 +66,9 @@ class Dice {
             this.scene.roundMult += amt;
             new Particle(this.game, orig, dest, 1, `×${amt}`, 'red');
         } else {
-            const amt = this.sides[this.nortIdx];
+            let amt = this.sides[this.nortIdx];
+            if (this.body == "gold")
+                amt *= 10;
             this.scene.roundGold += amt;
             new Particle(this.game, orig, dest, 1, `$${amt}`, 'yellow');
         }
