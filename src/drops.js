@@ -28,6 +28,14 @@
 // 3. info section
 // 4. mythic rarity
 // 5. consumables
+//
+//
+//      PASSIVES
+// 1. Lucky Clover - easier to find items of increasing rarity
+// 2.  - gain flat money for lower money later
+// 3.  - lose flat money for more money later
+// 4.  - mult sides give more mult
+// 5.
 
 ITEM_POOL = {};
 
