@@ -6,8 +6,10 @@ class Item {
             this.drop = ITEM_POOL.dropCommon();
         } else if (this.rarity == 'uncommon') {
             this.drop = ITEM_POOL.dropUncommon();
-        } else {
+        } else if (this.rarity == 'mythic') {
             this.drop = ITEM_POOL.dropRare();
+        } else {
+            this.drop = ITEM_POOL.dropMythic();
         }
         this.name = this.drop.name;
         this.item = this.drop.item;
@@ -56,7 +58,7 @@ class Item {
                 this.heldDice = new HoverDice(this.game, this.scene, this.diceButt, this.shop);
                 this.game.addEntity(this.heldDice);
             }
-        } else {
+        } else if (this.item.type == 'passive') {
             let flag = false;
             for (let i = 0; i < this.scene.passives.length; i++) {
                 const curr = this.scene.passives[i];
@@ -74,6 +76,19 @@ class Item {
             this.scene.gold -= this.cost;
             this.itemIcon.removeFromWorld = true;
             this.taken = true;
+        } else {
+            if (this.item.name == 'Duplication Ray') {
+                let numDice = 0;
+                let numUnlocked = 0;
+                this.scene.dice.forEach(dice => dice ? numDice++ : null);
+                this.scene.diceSlotsUnlocked.forEach(slot => slot ? numUnlocked++ : null);
+                console.log(numDice, numUnlocked);
+
+                if (numDice < numUnlocked) {
+                    const selected = this.scene.dice[getRandomInt(numDice)];
+                    this.scene.dice[numDice] = selected;
+                }
+            }
         }
     }
 
@@ -117,6 +132,9 @@ class Item {
         } else if (this.rarity == 'rare') {
             ctx.fillStyle = '#ffccff';
             ctx.strokeStyle = '#ff00ff';
+        } else if (this.rarity == 'mythic') {
+            ctx.fillStyle = '#b5a642';
+            ctx.strokeStyle = '#000000';
         }
         ctx.fillRect(this.x, this.y, this.width, this.height);
         ctx.strokeRect(this.x, this.y, this.width, this.height);
@@ -141,7 +159,7 @@ class Item {
 class Icon {
     constructor(game, scene, item, x, y, w, h) {
         Object.assign(this, { game, scene, item, x, y, w, h });
-        this.z = 100_010;
+        this.z = 100_000;
         this.img = ASSET_MANAGER.get(this.item.icon);
         
     }
@@ -149,7 +167,7 @@ class Icon {
     update() {
         const mx = this.game.mouse.x;
         const my = this.game.mouse.y;
-        this.highlighted = this.item.type == 'passive'
+        this.highlighted = (this.item.type == 'passive' || this.item.type == 'consumable')
             && mx >= this.x && mx <= this.x + this.w
             && my >= this.y && my <= this.y + this.h;
 

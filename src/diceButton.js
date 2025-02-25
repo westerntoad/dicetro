@@ -34,6 +34,11 @@ class DiceButton {
             this.isHighlighted = false;
         }
 
+        if (this.isHighlighted && this.game.click && this.scene.dice[this.buttonIdx]) {
+            this.scene.gold += sellPrice(this.scene.dice[this.buttonIdx]);
+            this.scene.dice[this.buttonIdx] = undefined;
+        }
+
         if (this.isHighlighted && this.game.click && this.scene.gold >= this.cost && !this.scene.diceSlotsUnlocked[this.buttonIdx] && this.buttonIdx != -1 && !this.disableUnlock) {
             this.scene.diceSlotsUnlocked[this.buttonIdx] = true;
             this.scene.gold -= this.cost;

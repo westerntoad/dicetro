@@ -22,9 +22,11 @@ class Shop {
             };
             let rarity = 'common';
             const quality = Math.random();
-            if (quality <= scene.rareChance * this.scene.cloverScalar()) {
+            if (quality <= PARAMS.mythicChance * this.scene.cloverScalar()) {
+                rarity = 'mythic';
+            } else if (quality <= (PARAMS.mythicChance + PARAMS.rareChance) * this.scene.cloverScalar()) {
                 rarity = 'rare';
-            } else if (quality + scene.rareChance * this.scene.cloverScalar() <= scene.uncommonChance * this.scene.cloverScalar()) {
+            } else if (quality <= (PARAMS.mythicChance + PARAMS.rareChance + PARAMS.uncommonChance) * this.scene.cloverScalar()) {
                 rarity = 'uncommon';
             }
             this.items[i] = new Item(game, scene, this, loc, size, rarity);

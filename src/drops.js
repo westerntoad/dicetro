@@ -161,3 +161,21 @@ ITEM_POOL.dropRare = () => {
 
     return drop;
 }
+
+ITEM_POOL.dropMythic = () => {
+    let drop = {};
+    const init = Math.random();
+
+    if (init > 0) {
+        drop.name = 'Duplication Ray';
+        drop.item = {
+            type: 'consumable',
+            name: drop.name,
+            icon: 'assets/ray.png',
+            desc: 'Duplicate a random dice in inventory. (MUST HAVE ROOM)'
+        }
+        drop.cost = 10_000;
+    }
+
+    return drop;
+}

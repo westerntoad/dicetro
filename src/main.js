@@ -11,8 +11,9 @@ const PARAMS = {
     drag: 1.4,
     bounce: 0.4,
     rotationSpeed: 20,
-    baseUncommonChance: 0.25,
-    baseRareChance: 0.05,
+    uncommonChance: 0.25,
+    rareChance: 0.05,
+    mythicChance: 0.01,
     font: {
         shopName: '20pt Papyrus',
         common: '14pt Courier',
@@ -35,6 +36,12 @@ const PARAMS = {
         extraRoll: '#305473',
         extraRollDark: '#000000'
     }
+}
+
+if (PARAMS.debug) {
+    PARAMS.uncommonChance = 0.25;
+    PARAMS.rareChance = 0.25;
+    PARAMS.mythicChance = 0.25;
 }
 
 const BODY_PROPERTIES = [];
@@ -77,6 +84,7 @@ ASSET_MANAGER.queue('assets/reroll.png');
 ASSET_MANAGER.queue('assets/coin.png');
 ASSET_MANAGER.queue('assets/lock.png');
 ASSET_MANAGER.queue('assets/clover.png');
+ASSET_MANAGER.queue('assets/ray.png');
 ASSET_MANAGER.queue('assets/maintheme.wav');
 ASSET_MANAGER.queue('assets/gameover.wav');
 ASSET_MANAGER.queue('assets/diceland1.wav');

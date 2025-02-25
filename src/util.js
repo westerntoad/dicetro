@@ -61,7 +61,11 @@ const getDistance = (p1, p2) => {
 // undocumented :) (blame abe)
 const clamp = (min, val, max) => Math.min(max, Math.max(min, val));
 const getRandomInt = max => Math.floor(Math.random() * max); // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
-const sum = (arr) => arr.reduce((acc, x) => acc + x, 0);
+const sum = arr => arr.reduce((acc, x) => acc + x, 0);
+const sellPrice = dice => {
+    // TODO
+    return 10;
+}
 
 // https://stackoverflow.com/a/15313435
 const assert = (condition, message) => {

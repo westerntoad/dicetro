@@ -11,8 +11,8 @@ class SceneManager {
         if (PARAMS.debug) {
             this.dice = [
                 //{ sides: [1, 3, 6, 4, 5, 2] }
-                { sides: [1, 3, 6, 4, 5, 2], body: "normal", mod: "wings"},
-                //{ sides: [1, 3, 6, 4, 5, 2], body: "bouncy" },
+                //{ sides: [1, 3, 6, 4, 5, 2], body: "normal", mod: "wings"},
+                { sides: [1, 3, 6, 4, 5, 2], body: "bouncy" },
                 //{ sides: [1, 3, 6, 4, 5, 2], body: "gold" },
                 //{ sides: [1, 3, 6, 4, 5, 2], body: "ghost" }
                 //{ sides: [1, 3, 6, 4, 5, 2], mult: [0, 0, 0, 0, 0, 0], body: "gold", mod: "none" }
@@ -26,14 +26,12 @@ class SceneManager {
         this.diceSlotsUnlocked = [ true, true, false, false, false, false ];
         //this.shopDelay = 1000000000;
         this.shopDelayElapsed = 0;
-        this.gold = PARAMS.debug ? 0 : 0;
+        this.gold = PARAMS.debug ? 999_999 : 0;
         this.rerolls = PARAMS.initialRolls;
         this.score = 1;
         this.extraRollCost = 1;
         this.previousExtraRollCost = 1;
         this.diceControlDisabled = false;
-        this.uncommonChance = PARAMS.baseUncommonChance;
-        this.rareChance = PARAMS.baseRareChance;
         this.passives = [];
 
         this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');
