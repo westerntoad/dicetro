@@ -4,7 +4,7 @@ class Dice {
         this.sides = dice.sides;
         this.mult = dice.mult;
         this.body = dice.body ? dice.body : "normal";
-        this.mod = dice.mod ? dice.mod : "none";
+        this.mods = dice.mods;
         this.isControlled = true;
         this.disabled = false;
         this.wasCalculated = false;
@@ -61,6 +61,16 @@ class Dice {
 
         this.currFaces = {}
         this.roll();
+    }
+
+    hasMod(name) {
+        if (!this.mods) return false;
+        for (let i = 0; i < this.mods.length; i++) {
+            if (this.mods[i] == name)
+                return true;
+        }
+
+        return false;
     }
 
     showGoldParticle() {
@@ -137,7 +147,7 @@ class Dice {
             this.y += clamp(-maxVel, dy * PARAMS.cling / 1000, maxVel);
         } else {
             this.velocity.y += PARAMS.gravity / 1000 * this.properties.weight;
-            if (this.mod == "wings") {
+            if (this.hasMod("wings")) {
                 this.velocity.y = Math.min(5, this.velocity.y);
             }
             this.isControlled = false;
@@ -180,10 +190,10 @@ class Dice {
                     this.ghostElapsed = this.ghostElapsed % ghostTime;
                     this.showGoldParticle();
                 }
-            }
+            }   
 
             this.rotationElapsedTime += this.game.clockTick;
-            if (this.mod == "wings" && this.velocity.y > 0 && !this.isControlled) {
+            if (this.hasMod("wings") && this.velocity.y > 0 && !this.isControlled) {
                 this.rotation = 0;
             } else if (this.rotationElapsedTime >= 1 / PARAMS.rotationSpeed) {
                 this.rotationElapsedTime = this.rotationElapsedTime % (1 / PARAMS.rotationSpeed);
@@ -200,7 +210,7 @@ class Dice {
             this.y = Math.min(this.y, PARAMS.canvasHeight - this.height);
         }
         if (this.x <= 0 || this.x >= PARAMS.canvasWidth - this.width) {
-            if (this.mod == "fractured") {
+            if (this.hasMod("fractured")) {
                 this.removeFromWorld = true;
                 for (let i = 0; i < 2; i++) {
                     const initial = {
@@ -208,9 +218,14 @@ class Dice {
                         y: this.y
                     }
                     //constructor(game, scene, initial, dice, deterministicTrajectory)
-                    const newDie = new Dice(this.game, this.scene, initial, { ...this.dice, mod: undefined }, true, 2);
+                    const modMinusFractured = [];
+                    this.mods.forEach(mod => {
+                        if (mod != "fractured")
+                            modMinusFractured.push(mod);
+                    });
+                    const newDie = new Dice(this.game, this.scene, initial, { ...this.dice, mods: modMinusFractured }, true, 2);
                     newDie.velocity = {
-                        x: -this.velocity.x * PARAMS.bounce + (Math.random() - 0.5) * 20,
+                        x: -this.velocity.x * PARAMS.bounce * this.properties.bounce + (Math.random() - 0.5) * 20,
                         y: this.velocity.y + (Math.random() - 0.5) * 20
                     };
                     this.game.addEntity(newDie);
@@ -259,9 +274,9 @@ class Dice {
         // draw empty dice
         this.offscreenCtx.drawImage(this.bodyImg, 0, 0, this.size, this.size);
 
-        if (this.mod == "fractured")
+        if (this.hasMod("fractured"))
             this.offscreenCtx.drawImage(this.fracturedImg, 0, 0, this.size, this.size);
-        if (this.mod == "wings")
+        if (this.hasMod("wings"))
             this.offscreenCtx.drawImage(this.wingsImg, 0, 0, this.size, this.size);
 
         // draw top face

@@ -42,24 +42,24 @@
 // 11. - ghost die give increasingly more amounts of money while in the air
 // 12. - gives one extra reroll per shop
 
-ITEM_POOL = {};
+ITEM_POOL = {}
 
 ITEM_POOL._sideFromTable = table => {
     if (PARAMS.debug) {
         const avg = table.reduce((acc, x) => acc + x, 0);
         const tolerance = 0.001;
         const acceptable = avg >= 1 - tolerance && avg <= 1 + tolerance;
-        assert(acceptable && table.length == 6);
+        assert(acceptable && table.length == 7);
     }
 
     const rand = Math.random();
     let sum = 0;
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i <= 6; i++) {
         sum += table[i];
 
         if (rand <= sum)
-            return i + 1;
+            return i;
     }
 
     assert(false); // unreachable code
@@ -75,107 +75,218 @@ ITEM_POOL._allSidesFromTable = table => {
     return sides;
 }
 
+ITEM_POOL._dropDice = (sideTable, multTable, bodyTable, modsTable) => {
+    /*     0  1  2  3  4  5  6
+    sides:[0, 0, 0, 0, 0, 0, 0],
+           x2    x4    x8    x16
+    mult: [0   , 0   , 0   , 0   ],
+           bouncy    ghost    gold
+    body: [0       , 0       ,0       ],
+           fractured wings
+    mods: [0       , 0       ],*/
 
-ITEM_POOL.dropCommon = () => {
-    let drop = {};
-    const init = Math.random();
+    const sides = ITEM_POOL._allSidesFromTable(sideTable);
+    const mult = [0, 0, 0, 0, 0, 0];
+    let body = "normal";
+    let mods = [];
+    for (let i = 0; i < mult.length; i++) {
+        const rand = Math.random();
+        let sum = 0;
 
-    if (init <= 0.3) {
-        drop.name = 'Low-value Die'
-        drop.item = { type: 'dice', sides: [] };
+        for (let j = multTable.length - 1; j >= 0; j--) {
+            sum += multTable[j];
+            console.log(rand, sum);
 
-        const table = [0.20, 0.20, 0.20, 0.15, 0.15, 0.10];
-        drop.item.sides = ITEM_POOL._allSidesFromTable(table);
-        drop.cost = Math.floor(drop.item.sides.reduce((acc, x) => acc + x, 0) / 2 / 5) * 5;
-    } else if (init <= 1) {
-        drop.name = 'Low Mult Die';
-        drop.item = { type: 'dice', sides: [], mult: [] };
-
-        const table = [0.20, 0.20, 0.20, 0.15, 0.15, 0.10];
-        drop.item.sides = ITEM_POOL._allSidesFromTable(table);
-        const i = getRandomInt(6) + 1;
-        drop.item.sides[i] = 0;
-        drop.item.mult[i] = 2;
-        drop.cost = Math.floor(drop.item.sides.reduce((acc, x) => acc + x, 0) / 2 / 5) * 5;
-        // debug
-        for (let i = 0; i < 6; i++) {
-            drop.item.sides[i] = 0;
-            drop.item.mult[i] = 2;
+            if (rand <= sum) { 
+                sides[i] = 0;
+                mult[i] = 2**(j+1);
+            }
         }
-    } else {
-        drop.name = 'Normal Die';
-        drop.item = { type: 'dice', sides: [] };
-        drop.item.sides = [1, 3, 6, 4, 5, 2];
-        drop.cost = 5;
     }
 
-    return drop;
+    let rand = Math.random();
+    let sum = 0;
+
+    for (let i = 0; i < 3; i++) {
+        sum += bodyTable[i];
+
+        if (rand <= sum) {
+            if      (i == 0)
+                body = 'bouncy'; 
+            else if (i == 1)
+                body = 'ghost';
+            else if (i == 2)
+                body == 'gold'
+            break;
+        }
+    }
+
+    for (let i = 0; i < modsTable.length; i++) {
+        rand = Math.random();
+        if (rand <= modsTable[i]) {
+            let mod = '';
+            if      (i == 0)
+                mod = 'fractured';
+            else if (i == 1)
+                mod = 'wings';
+
+            mods.push(mod);
+        }
+    }
+
+
+    return {
+        type: 'dice',
+        sides: sides,
+        mult: mult,
+        body: body,
+        mods: mods
+    }
+}
+
+ITEM_POOL._drop = table => {
+    if (PARAMS.debug) {
+        const avg = table.reduce((acc, x) => acc + x[1], 0);
+        const tolerance = 0.001;
+        const acceptable = avg >= 1 - tolerance && avg <= 1 + tolerance;
+        assert(acceptable);
+    }
+    
+    const rand = Math.random();
+    let sum = 0;
+
+    for (let i = 0; i < 6; i++) {
+        sum += table[i][1];
+
+        if (rand <= sum) {
+            let el = table[i][0];
+            if (el.item && !el.item.name) {
+                el.item.name = el.name;
+            }
+            if (el.item && el.item.type == 'passive' && !el.item.count) {
+                el.item.count = 1;
+            }
+            if (el.gen) {
+                const genItem = ITEM_POOL._dropDice(el.gen.sides, el.gen.mult, el.gen.body, el.gen.mods);
+                return { item: genItem, name: el.name, cost: el.cost };
+            } else {
+                return table[i][0];
+            }
+        }
+    }
+
+    assert(false); // unreachable code
+}
+
+ITEM_POOL.items = {}
+
+
+/*
+ *      ~~~~ DICE ~~~~
+ */
+ITEM_POOL.items.normalDie = {
+    name: 'Normal Die',
+    cost: 5,
+    item: {
+        type: 'dice',
+        sides:[1, 3, 6, 4, 5, 2],
+        mult: [0, 0, 0, 0, 0, 0],
+        body: "normal",
+        mods: []
+    }
+}
+
+ITEM_POOL.items.poorDie = {
+    name: 'Poor Die',
+    cost: 10,
+    gen: {
+        //     0     1     2     3     4     5     6
+        sides:[0   , 0.20, 0.20, 0.20, 0.15, 0.15, 0.10],
+        //     x2    x4    x8    x16
+        mult: [0.10, 0   , 0   , 0   ],
+        //     bouncy    ghost    gold
+        body: [0.05    , 0       ,0       ],
+        //     fractured wings
+        mods: [0.02    , 0       ],
+    }
+}
+
+/*ITEM_POOL.items.mediumValueDie = {
+    name: 'Medium Value Die',
+    cost: 10,
+    gen: {
+        //     0     1     2     3     4     5     6
+        sides:[0   , 0   , 0   , 0   , 0   , 0   , 0   ],
+        //     x2    x4    x8    x16
+        mult: [0   , 0   , 0   , 0   ],
+        //     bouncy    ghost    gold
+        body: [0       , 0       ,0       ],
+        //     fractured wings
+        mods: [0       , 0       ],
+    }
+}*/
+
+/*
+ *      ~~~~ CONSUMABLES ~~~~
+ */
+
+ITEM_POOL.items.ray = {
+    name: 'Duplication Ray',
+    cost: 10_000,
+    item: {
+        type: 'consumable',
+        icon: 'assets/ray.png',
+        desc: 'Duplicates a random dice in inventory. (MUST HAVE ROOM)'
+    }
+}
+
+/*
+ *      ~~~~ PASSIVES ~~~~
+ */
+
+ITEM_POOL.items.clover = {
+    name: 'Four-leaf Clover',
+    cost: 20,
+    item: {
+        type: 'passive',
+        icon: 'assets/clover.png',
+        desc: 'Increases the chanes of finding higher quality items.'
+    }
+}
+
+ITEM_POOL.items.freeShop = {
+    name: 'Free Shop',
+    cost: 20,
+    item: {
+        type: 'passive',
+        icon: 'assets/invalid-icon.png',
+        desc: 'Click icon in passive menu to renew Shop items every round upon purchase.'
+    }
+}
+
+ITEM_POOL.dropCommon = () => {
+    return ITEM_POOL._drop([
+        [ITEM_POOL.items.poorDie, 1]
+    ]);
 }
 
 ITEM_POOL.dropUncommon = () => {
-    let drop = {};
-    const init = Math.random();
-
-    if (init <= 0.5) {
-        drop.name = 'Medium-value Die'
-        drop.item = { type: 'dice', sides: [] };
-
-        const table = [0.15, 0.15, 0.15, 0.15, 0.20, 0.20];
-        drop.item.sides = ITEM_POOL._allSidesFromTable(table);
-        drop.cost = Math.floor(drop.item.sides.reduce((acc, x) => acc + x, 0) / 5) * 5;
-    } else {
-        drop.name = 'Four-leaf Clover';
-        drop.item = {
-            type: 'passive',
-            name: drop.name,
-            icon: 'assets/clover.png',
-            desc: 'Increases the chances of finding higher quality items.',
-            effect: 1.25,
-            count: 1
-        };
-        drop.cost = 50;
-    }
-
-    return drop;
+    return ITEM_POOL._drop([
+        [ITEM_POOL.items.clover, 0.01],
+        [ITEM_POOL.items.freeShop, 0.99]
+    ]);
 
 }
 
 ITEM_POOL.dropRare = () => {
-    let drop = {};
-    const init = Math.random();
-    if (init <= 0.5) {
-        // normal rare dice 
-        drop.name = 'High-value Die';
-        drop.item = { type: 'dice', sides: [] };
-        const table = [0.04, 0.06, 0.10, 0.10, 0.20, 0.50];
-        drop.item.sides = ITEM_POOL._allSidesFromTable(table);
-        drop.cost = drop.item.sides.reduce((acc, x) => acc + x*3, 0);
-    } else {
-        // All-side dice
-        drop.name = 'All-sided Die';
-        drop.item = { type: 'dice', sides: []};
-        const side = getRandomInt(6) + 1;
-        drop.item.sides = Array(6).fill(side);
-        drop.cost = 100 + 10 * side;
-    }
+    return ITEM_POOL._drop([
+        [ITEM_POOL.items.ray, 1]
+    ]);
 
-    return drop;
 }
 
 ITEM_POOL.dropMythic = () => {
-    let drop = {};
-    const init = Math.random();
-
-    if (init > 0) {
-        drop.name = 'Duplication Ray';
-        drop.item = {
-            type: 'consumable',
-            name: drop.name,
-            icon: 'assets/ray.png',
-            desc: 'Duplicate a random dice in inventory. (MUST HAVE ROOM)'
-        }
-        drop.cost = 10_000;
-    }
-
-    return drop;
+    return ITEM_POOL._drop([
+        [ITEM_POOL.items.ray, 1]
+    ]);
 }

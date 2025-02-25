@@ -85,6 +85,7 @@ ASSET_MANAGER.queue('assets/coin.png');
 ASSET_MANAGER.queue('assets/lock.png');
 ASSET_MANAGER.queue('assets/clover.png');
 ASSET_MANAGER.queue('assets/ray.png');
+ASSET_MANAGER.queue('assets/invalid-icon.png');
 ASSET_MANAGER.queue('assets/maintheme.wav');
 ASSET_MANAGER.queue('assets/gameover.wav');
 ASSET_MANAGER.queue('assets/diceland1.wav');

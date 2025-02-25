@@ -71,6 +71,9 @@ class Item {
             if (!flag) {
                 this.scene.passives.push(this.item);
                 this.shop.addPassive(this.item);
+                const newPassive = this.shop.passives[this.shop.passives.length - 1];
+                if (newPassive.unused)
+                    newPassive.unused--;
             }
 
             this.scene.gold -= this.cost;
@@ -87,6 +90,9 @@ class Item {
                 if (numDice < numUnlocked) {
                     const selected = this.scene.dice[getRandomInt(numDice)];
                     this.scene.dice[numDice] = selected;
+                    this.gold -= this.item.cost;
+                    this.taken = true;
+                    this.itemIcon.removeFromWorld = true;
                 }
             }
         }
@@ -157,9 +163,10 @@ class Item {
 }
 
 class Icon {
-    constructor(game, scene, item, x, y, w, h) {
-        Object.assign(this, { game, scene, item, x, y, w, h });
+    constructor(game, scene, item, x, y, w, h, shop) {
+        Object.assign(this, { game, scene, item, x, y, w, h, shop });
         this.z = 100_000;
+        this.unused = this.item.count;
         this.img = ASSET_MANAGER.get(this.item.icon);
         
     }
@@ -171,13 +178,23 @@ class Icon {
             && mx >= this.x && mx <= this.x + this.w
             && my >= this.y && my <= this.y + this.h;
 
+        if (this.game.click && this.highlighted && this.shop && this.item.name == 'Free Shop' && this.unused != 0) {
+            this.unused--;
+            this.shop.freeShop();
+        }
     }
 
     draw(ctx) {
         ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
 
         // multiple counts
-        if (this.item.count > 1) {
+        if (this.item.name == "Free Shop" && this.shop) {
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#000000';
+            ctx.textBaseline = 'center';
+            ctx.font = '14pt monospace';
+            ctx.fillText(`${this.unused}/${this.item.count}`, this.x + this.w, this.y);
+        } else if (this.item.count > 1) {
             ctx.textAlign = 'center';
             ctx.fillStyle = '#000000';
             ctx.textBaseline = 'center';

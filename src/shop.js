@@ -10,29 +10,8 @@ class Shop {
 
         this.numItems = 3;
         this.items = [];
-
-        for (let i = 0; i < this.numItems; i++) {
-            const size = {
-                width: 200,
-                height: this.height - 150
-            };
-            const loc = {
-                x: this.x + (this.width / (this.numItems + 1)) * (i + 1),
-                y: this.y + (this.height / 2) - 25
-            };
-            let rarity = 'common';
-            const quality = Math.random();
-            if (quality <= PARAMS.mythicChance * this.scene.cloverScalar()) {
-                rarity = 'mythic';
-            } else if (quality <= (PARAMS.mythicChance + PARAMS.rareChance) * this.scene.cloverScalar()) {
-                rarity = 'rare';
-            } else if (quality <= (PARAMS.mythicChance + PARAMS.rareChance + PARAMS.uncommonChance) * this.scene.cloverScalar()) {
-                rarity = 'uncommon';
-            }
-            this.items[i] = new Item(game, scene, this, loc, size, rarity);
-            this.game.addEntity(this.items[i]);
-        }
-
+        this.freeShop();
+        
         
         this.extraRollButton = new Button(
             game, scene,
@@ -87,6 +66,35 @@ class Shop {
         this.scene.passives.forEach(item => this.addPassive(item));
     }
 
+    freeShop() {
+        this.items.forEach(item => {
+            item.itemIcon.removeFromWorld = true;
+            item.removeFromWorld = true;
+        });
+
+        for (let i = 0; i < this.numItems; i++) {
+            const size = {
+                width: 200,
+                height: this.height - 150
+            };
+            const loc = {
+                x: this.x + (this.width / (this.numItems + 1)) * (i + 1),
+                y: this.y + (this.height / 2) - 25
+            };
+            let rarity = 'common';
+            const quality = Math.random();
+            if (quality <= PARAMS.mythicChance * this.scene.cloverScalar()) {
+                rarity = 'mythic';
+            } else if (quality <= (PARAMS.mythicChance + PARAMS.rareChance) * this.scene.cloverScalar()) {
+                rarity = 'rare';
+            } else if (quality <= (PARAMS.mythicChance + PARAMS.rareChance + PARAMS.uncommonChance) * this.scene.cloverScalar()) {
+                rarity = 'uncommon';
+            }
+            this.items[i] = new Item(this.game, this.scene, this, loc, size, rarity);
+            this.game.addEntity(this.items[i]);
+        }
+    }
+
     addPassive(item) {
         
         const i = this.passives.length;
@@ -96,7 +104,7 @@ class Shop {
         const y = this.y + 50 + (h + 5) * Math.floor(i / 2);
         this.passives.push(new Icon(
             this.game, this.scene, item,
-            x, y, w, h
+            x, y, w, h, this
         ));
 
         this.game.addEntity(this.passives[i]);
