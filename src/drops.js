@@ -95,7 +95,6 @@ ITEM_POOL._dropDice = (sideTable, multTable, bodyTable, modsTable) => {
 
         for (let j = multTable.length - 1; j >= 0; j--) {
             sum += multTable[j];
-            console.log(rand, sum);
 
             if (rand <= sum) { 
                 sides[i] = 0;
@@ -198,37 +197,77 @@ ITEM_POOL.items.normalDie = {
 
 ITEM_POOL.items.poorDie = {
     name: 'Poor Die',
-    cost: 10,
+    cost: 5,
     gen: {
         //     0     1     2     3     4     5     6
-        sides:[0   , 0.20, 0.20, 0.20, 0.15, 0.15, 0.10],
+        sides:[0.40, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10],
         //     x2    x4    x8    x16
         mult: [0.10, 0   , 0   , 0   ],
-        //     bouncy    ghost    gold
-        body: [0.05    , 0       ,0       ],
+        //     bouncy    ghost     gold
+        body: [0       , 0.15    , 0       ],
         //     fractured wings
-        mods: [0.02    , 0       ],
+        mods: [0.02    , 0.03    ],
     }
 }
 
-/*ITEM_POOL.items.mediumValueDie = {
-    name: 'Medium Value Die',
-    cost: 10,
+ITEM_POOL.items.common = {
+    name: 'Common Die',
+    cost: 5,
     gen: {
         //     0     1     2     3     4     5     6
-        sides:[0   , 0   , 0   , 0   , 0   , 0   , 0   ],
+        sides:[0.05, 0.15, 0.15, 0.15, 0.20, 0.15, 0.15],
         //     x2    x4    x8    x16
-        mult: [0   , 0   , 0   , 0   ],
-        //     bouncy    ghost    gold
-        body: [0       , 0       ,0       ],
+        mult: [0.10, 0.05, 0   , 0   ],
+        //     bouncy    ghost     gold
+        body: [0.05    , 0.02    , 0.02    ],
         //     fractured wings
-        mods: [0       , 0       ],
+        mods: [0.01    , 0.01    ],
     }
-}*/
+}
+
+ITEM_POOL.items.uncommonDie = {
+    name: 'Uncommon Die',
+    cost: 25,
+    gen: {
+        //     0     1     2     3     4     5     6
+        sides:[0   , 0.15, 0.15, 0.15, 0.15, 0.15, 0.15],
+        //     x2    x4    x8    x16
+        mult: [0.05, 0.10, 0.05, 0   ],
+        //     bouncy    ghost     gold
+        body: [0.15    , 0.05    , 0.05    ],
+        //     fractured wings
+        mods: [0       , 0.01    ],
+    }
+}
+
+ITEM_POOL.items.rareDie = {
+    name: 'Rare Die',
+    cost: 100,
+    gen: {
+        //     0     1     2     3     4     5     6
+        sides:[0   , 0.05, 0.05, 0.05, 0.30, 0.20, 0.35],
+        //     x2    x4    x8    x16
+        mult: [0   , 0.05, 0.10, 0.05],
+        //     bouncy    ghost     gold
+        body: [0.15    , 0.05    , 0.10    ],
+        //     fractured wings
+        mods: [0.05    , 0.05    ],
+    }
+}
 
 /*
  *      ~~~~ CONSUMABLES ~~~~
  */
+
+ITEM_POOL.items.pick = {
+    name: 'Rock Pick',
+    cost: 200,
+    item: {
+        type: 'consumable',
+        icon: 'assets/pick.png',
+        desc: 'Fracture a random die in inventory.'
+    }
+}
 
 ITEM_POOL.items.ray = {
     name: 'Duplication Ray',
@@ -259,34 +298,83 @@ ITEM_POOL.items.freeShop = {
     cost: 20,
     item: {
         type: 'passive',
-        icon: 'assets/invalid-icon.png',
+        icon: 'assets/free-shop.png',
         desc: 'Click icon in passive menu to renew Shop items every round upon purchase.'
     }
 }
 
+ITEM_POOL.items.fissure = {
+    name: 'Fissure',
+    cost: 250,
+    item: {
+        type: 'passive',
+        icon: 'assets/fissure.png',
+        desc: 'Fractured die produce an additional die when broken.'
+    }
+}
+
+ITEM_POOL.items.spaceman = {
+    name: 'Spaceman',
+    cost: 20,
+    item: {
+        type: 'passive',
+        icon: 'assets/spaceman.png',
+        desc: 'Your dice are affected less by gravity.'
+    }
+}
+
+ITEM_POOL.items.tar = {
+    name: 'Pine Tar',
+    cost: 25,
+    item: {
+        type: 'passive',
+        icon: 'assets/tar.png',
+        desc: 'Provide better control & power over the throw of your dice.'
+    }
+}
+
+ITEM_POOL.items.bedsheet = {
+    name: 'Spooky Bedsheet',
+    cost: 300,
+    item: {
+        type: 'passive',
+        icon: 'assets/invalid-icon.png',
+        desc: 'Increase the rate ghost dice trigger.'
+    }
+}
+
+
 ITEM_POOL.dropCommon = () => {
     return ITEM_POOL._drop([
-        [ITEM_POOL.items.poorDie, 1]
+        [ITEM_POOL.items.normalDie, 0.25],
+        [ITEM_POOL.items.poorDie,   0.25],
+        [ITEM_POOL.items.commonDie, 0.30],
+        [ITEM_POOL.items.spaceman,  0.10],
+        [ITEM_POOL.items.tar,       0.10],
     ]);
 }
 
 ITEM_POOL.dropUncommon = () => {
     return ITEM_POOL._drop([
-        [ITEM_POOL.items.clover, 0.01],
-        [ITEM_POOL.items.freeShop, 0.99]
+        [ITEM_POOL.items.uncommonDie, 0.50],
+        [ITEM_POOL.items.clover,      0.25],
+        [ITEM_POOL.items.freeShop,    0.25],
     ]);
 
 }
 
 ITEM_POOL.dropRare = () => {
     return ITEM_POOL._drop([
-        [ITEM_POOL.items.ray, 1]
+        [ITEM_POOL.items.rareDie,  0.50],
+        [ITEM_POOL.items.fissure,  0.25],
+        [ITEM_POOL.items.bedsheet, 0.25],
     ]);
 
 }
 
 ITEM_POOL.dropMythic = () => {
     return ITEM_POOL._drop([
-        [ITEM_POOL.items.ray, 1]
+        [ITEM_POOL.items.ray,  0.50],
+        [ITEM_POOL.items.pick, 0.50],
     ]);
 }

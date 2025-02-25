@@ -41,7 +41,7 @@ class Shop {
                 this.scene.rerolls--;
                 this.scene.items = [];
                 this.scene.overlay = [];
-                this.scene.dice.forEach(x => { x.removeFromWorld = true; });
+                this.scene.dice.forEach(x => { x.removeFromWorld &&= true; });
                 this.scene.inShop = false;
                 this.scene.shouldThrow = true;
                 this.game.clear();
@@ -68,7 +68,8 @@ class Shop {
 
     freeShop() {
         this.items.forEach(item => {
-            item.itemIcon.removeFromWorld = true;
+            if (item.itemIcon)
+                item.itemIcon.removeFromWorld = true;
             item.removeFromWorld = true;
         });
 

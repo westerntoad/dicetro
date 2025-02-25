@@ -122,6 +122,8 @@ class Dice {
     update() {
         this.x += this.velocity.x;
         this.y += this.velocity.y;
+        let tarCount = this.scene.itemCount("Pine Tar") + 1;
+        let spacemanCount = (this.scene.itemCount("Spaceman") + 2) / 2;
 
         if (this.game.mouse.isDown && this.game.mouse.x && this.isControlled && !this.scene.diceControlDisabled) {
             if (this.scene.dice.length > 1) {
@@ -136,29 +138,39 @@ class Dice {
             }
             const dx = (this.game.mouse.x + this.home.x) - (this.x + (this.width / 2));
             const dy = (this.game.mouse.y + this.home.y) - (this.y + (this.height / 2));
-            this.velocity.x += dx * PARAMS.speed / 1000;
-            this.velocity.y += dy * PARAMS.speed / 1000;
+            this.velocity.x += dx * PARAMS.speed / 1000 * tarCount;
+            this.velocity.y += dy * PARAMS.speed / 1000 * tarCount;
 
-            const maxVel = 25;
+            const maxVel = 25 * (tarCount**3);
             this.velocity.x = clamp(-maxVel, this.velocity.x, maxVel);
             this.velocity.y = clamp(-maxVel, this.velocity.y, maxVel);
 
-            this.x += clamp(-maxVel, dx * PARAMS.cling / 1000, maxVel);
-            this.y += clamp(-maxVel, dy * PARAMS.cling / 1000, maxVel);
+            tarCount *= 2;
+            this.x += clamp(-maxVel, dx * PARAMS.cling / 1000 * tarCount, maxVel);
+            this.y += clamp(-maxVel, dy * PARAMS.cling / 1000 * tarCount, maxVel);
         } else {
-            this.velocity.y += PARAMS.gravity / 1000 * this.properties.weight;
+            const wasNegative = this.velocity.y < 0;
+            this.velocity.y += PARAMS.gravity / 1000 * this.properties.weight / spacemanCount;
+            /*if (this.velocity.y > 0 && wasNegative) {
+                this.velocity.y /= tarCount * 100;
+            }*/
             if (this.hasMod("wings")) {
                 this.velocity.y = Math.min(5, this.velocity.y);
             }
+            /*if (this.isControlled && this.velocity.y < 0) {
+                this.velocity.y *= (tarCount - 0.5) * 2;
+            }*/
             this.isControlled = false;
         }
 
         if (this.onFloor()) {
             // bounce off the ground
-            if (this.body == "bouncy" && !this.wasCalculated && this.velocity.y > 30) {
+            if (this.body == "bouncy" && !this.wasCalculated && this.velocity.y > 30 - Math.min(tarCount, 24) * 0.9) {
                 this.showGoldParticle();
-                this.y -= 60;
-                this.velocity.y *= -0.5;
+                while (this.onFloor()) {
+                    this.y -= 0.01;
+                }
+                this.velocity.y *= -0.5 - 0.40*Math.min(1, Math.sqrt(tarCount / 16));
                 return;
             }
             this.rotation = 0;
@@ -183,7 +195,7 @@ class Dice {
                 this.velocity.y = 0;
         } else {
             if (this.body == "ghost" && !this.isControlled) {
-                const ghostTime = 1;
+                const ghostTime = 0.9**this.scene.itemCount("Spooky Bedsheet");
                 this.ghostElapsed += this.game.clockTick;
                 
                 if (this.ghostElapsed >= ghostTime) {
@@ -212,7 +224,8 @@ class Dice {
         if (this.x <= 0 || this.x >= PARAMS.canvasWidth - this.width) {
             if (this.hasMod("fractured")) {
                 this.removeFromWorld = true;
-                for (let i = 0; i < 2; i++) {
+                console.log("item count fissure:", this.scene.itemCount("Fissure"));
+                for (let i = 0; i < 2 + this.scene.itemCount("Fissure"); i++) {
                     const initial = {
                         x: clamp(0, this.x + (Math.random() - 0.5) * 20, PARAMS.canvasWidth - this.width),
                         y: this.y
@@ -244,7 +257,7 @@ class Dice {
     }
 
     draw(ctx) {
-        if (this.y < 0) {
+        if (this.y + this.height < 0) {
             const w = 70;
             const h = 35;
             ctx.save();

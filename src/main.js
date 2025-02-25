@@ -1,7 +1,7 @@
 const gameEngine = new GameEngine();
 
 const PARAMS = {
-    debug: true,
+    debug: false,
     initialRolls: 2, // in actuality, 3
     diceSlotCosts: [0, 5, 25, 100, 500, 5_000],
     speed: 20,
@@ -85,6 +85,11 @@ ASSET_MANAGER.queue('assets/coin.png');
 ASSET_MANAGER.queue('assets/lock.png');
 ASSET_MANAGER.queue('assets/clover.png');
 ASSET_MANAGER.queue('assets/ray.png');
+ASSET_MANAGER.queue('assets/fissure.png');
+ASSET_MANAGER.queue('assets/pick.png');
+ASSET_MANAGER.queue('assets/tar.png');
+ASSET_MANAGER.queue('assets/spaceman.png');
+ASSET_MANAGER.queue('assets/free-shop.png');
 ASSET_MANAGER.queue('assets/invalid-icon.png');
 ASSET_MANAGER.queue('assets/maintheme.wav');
 ASSET_MANAGER.queue('assets/gameover.wav');

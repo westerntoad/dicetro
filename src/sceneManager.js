@@ -8,31 +8,27 @@ class SceneManager {
         this.roundGold = 0;
         this.roundMult = 0;
         // weird order to make sure dice are displayed correctly
-        if (PARAMS.debug) {
-            this.dice = [
-                //{ sides: [1, 3, 6, 4, 5, 2] }
-                //{ sides: [1, 3, 6, 4, 5, 2], body: "normal", mod: "wings"},
-                //{ sides: [1, 3, 6, 4, 5, 2], body: "bouncy", mods: ["fractured"] },
-                //{ sides: [1, 3, 6, 4, 5, 2], body: "gold" },
-                //{ sides: [1, 3, 6, 4, 5, 2], body: "ghost" }
-                { sides: [0, 0, 0, 0, 0, 0], mult: [2, 2, 2, 2, 4, 4], body: "gold", mods: [] }
-            ];
-        } else {
-            this.dice = [ { sides: [1, 3, 6, 4, 5, 2] } ];
-        }
+        this.dice = [ { sides: [1, 3, 6, 4, 5, 2] } ];
         this.inShop = false;
         this.scoreDelay = 0;
         this.shopDelay = 1.25;
-        this.diceSlotsUnlocked = [ true, true, false, false, false, false ];
+        this.diceSlotsUnlocked = [ true, false, false, false, false, false ];
         //this.shopDelay = 1000000000;
         this.shopDelayElapsed = 0;
         this.gold = PARAMS.debug ? 999_999 : 0;
         this.rerolls = PARAMS.initialRolls;
         this.score = 1;
+        this.totalScore = 0;
         this.extraRollCost = 1;
         this.previousExtraRollCost = 1;
         this.diceControlDisabled = false;
         this.passives = [];
+        if (PARAMS.debug) {
+            const freeShop = { ...ITEM_POOL.items.freeShop };
+            freeShop.item.name = 'Free Shop';
+            freeShop.item.count = 99;
+            this.passives.push(freeShop.item);
+        }
 
         this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');
         this.multSheet = ASSET_MANAGER.get('assets/mult-overlay.png');
@@ -40,16 +36,18 @@ class SceneManager {
         this.game.click = null;
     }
 
-    cloverScalar() {
+    itemCount(name) {
         for (let i = 0; i < this.passives.length; i++) {
-            if (this.passives[i].name == 'Four-leaf Clover') {
-                let scalar = Math.pow(this.passives[i].effect, this.passives[i].count);
-                console.log(scalar);
-                return scalar;
+            if (this.passives[i].name == name) {
+                return this.passives[i].count;
             }
         }
-        return 1;
-        
+
+        return 0;
+    }
+
+    cloverScalar() {
+        return this.itemCount("Four-leaf Clover") ? this.itemCount("Four-leaf Clover") : 1;
     }
 
     allDiceScored() {
@@ -150,6 +148,7 @@ class SceneManager {
             this.shopDelayElapsed += this.game.clockTick;
             if (this.scoreGUI && this.scoreGUI.isDone) {
                 this.gold += this.scoreGUI.gold;
+                this.totalScore += this.scoreGUI.gold;
                 this.shownScore = false;
                 this.hideScore();
                 this.roundGold = 0;
@@ -223,7 +222,7 @@ class SceneManager {
             if (this.deathElapsed > 6.5) {
                 ctx.font = '35pt monospace'
                 ctx.fillStyle = '#00dd00'
-                ctx.fillText(this.score, PARAMS.canvasWidth / 2, PARAMS.canvasHeight / 2 - 100);
+                ctx.fillText(this.totalScore + this.score * 100, PARAMS.canvasWidth / 2, PARAMS.canvasHeight / 2 - 100);
             }
         }
     }

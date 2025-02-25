@@ -6,7 +6,7 @@ class Item {
             this.drop = ITEM_POOL.dropCommon();
         } else if (this.rarity == 'uncommon') {
             this.drop = ITEM_POOL.dropUncommon();
-        } else if (this.rarity == 'mythic') {
+        } else if (this.rarity == 'rare') {
             this.drop = ITEM_POOL.dropRare();
         } else {
             this.drop = ITEM_POOL.dropMythic();
@@ -85,15 +85,32 @@ class Item {
                 let numUnlocked = 0;
                 this.scene.dice.forEach(dice => dice ? numDice++ : null);
                 this.scene.diceSlotsUnlocked.forEach(slot => slot ? numUnlocked++ : null);
-                console.log(numDice, numUnlocked);
 
-                if (numDice < numUnlocked) {
+                if (numDice < numUnlocked && this.scene.gold >= this.cost) {
                     const selected = this.scene.dice[getRandomInt(numDice)];
                     this.scene.dice[numDice] = selected;
-                    this.gold -= this.item.cost;
+                    this.scene.gold -= this.cost;
                     this.taken = true;
                     this.itemIcon.removeFromWorld = true;
                 }
+            } else if (this.item.name == 'Rock Pick' && this.scene.gold >= this.cost) {
+                this.scene.dice.forEach(dice => {
+                    let found = false;
+
+                    dice.mods.forEach(mod => {
+                        if (mod == 'fractured')
+                            found = true;
+                    });
+
+                    if (!found) {
+                        dice.mods.push('fractured');
+                        this.scene.gold -= this.cost;
+                        this.taken = true;
+                        this.itemIcon.removeFromWorld = true;
+
+                        return;
+                    }
+                });
             }
         }
     }
@@ -185,7 +202,7 @@ class Icon {
     }
 
     draw(ctx) {
-        ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
+        ctx.drawImage(this.img || ASSET_MANAGER.get("assets/invalid-icon.png"), this.x, this.y, this.w, this.h);
 
         // multiple counts
         if (this.item.name == "Free Shop" && this.shop) {
@@ -194,7 +211,7 @@ class Icon {
             ctx.textBaseline = 'center';
             ctx.font = '14pt monospace';
             ctx.fillText(`${this.unused}/${this.item.count}`, this.x + this.w, this.y);
-        } else if (this.item.count > 1) {
+        } else if (this.item.count > 1 && this.shop) {
             ctx.textAlign = 'center';
             ctx.fillStyle = '#000000';
             ctx.textBaseline = 'center';
