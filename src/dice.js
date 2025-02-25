@@ -20,8 +20,8 @@ class Dice {
             this.x = initial.x + r * Math.cos(angle) - this.width / 2;
             this.y = initial.y + r * Math.sin(angle) - this.height / 2;
             this.velocity = {
-                x: Math.random() * 25,
-                y: Math.random() * 25
+                x: Math.random() * 10,
+                y: Math.random() * 10
             };
             this.z = 1 + 1 / this.y;
         } else {
@@ -39,6 +39,9 @@ class Dice {
             this.bodyImg = ASSET_MANAGER.get('assets/bouncy-dice.png');
         } else if (dice.body == "gold") {
             this.bodyImg = ASSET_MANAGER.get('assets/gold-dice.png');
+        } else if (dice.body== "ghost") {
+            this.bodyImg = ASSET_MANAGER.get('assets/ghost-dice.png');
+            this.ghostElapsed = 0;
         } else {
             this.bodyImg = ASSET_MANAGER.get('assets/empty-dice.png');
         }
@@ -59,8 +62,11 @@ class Dice {
     }
 
     showGoldParticle() {
-        const orig = { x: this.x, y: this.y }
-        const dest = { x: orig.x, y: orig.y - 100 }
+        const orig = {
+            x: clamp(100, this.x, PARAMS.canvasWidth - 100),
+            y: Math.max(this.y, 100)
+        }
+        const dest = { x: orig.x, y: Math.max(orig.y - 100, 0) }
         if (this.mult && this.mult[this.nortIdx] != 0) {
             const amt = this.mult[this.nortIdx];
             this.scene.roundMult += amt;
@@ -104,13 +110,27 @@ class Dice {
         this.y += this.velocity.y;
 
         if (this.game.mouse.isDown && this.game.mouse.x && this.isControlled && !this.scene.diceControlDisabled) {
-            const dx = this.game.mouse.x - (this.x + (this.width / 2));
-            const dy = this.game.mouse.y - (this.y + (this.height / 2));
+            if (this.scene.dice.length > 1) {
+                const angle = Math.random() * 2 * Math.PI;
+                const r = 100;
+                this.home = {
+                    x: r * Math.cos(angle),
+                    y: r * Math.sin(angle)
+                }
+            } else {
+                this.home = { x: 0, y: 0 }
+            }
+            const dx = (this.game.mouse.x + this.home.x) - (this.x + (this.width / 2));
+            const dy = (this.game.mouse.y + this.home.y) - (this.y + (this.height / 2));
             this.velocity.x += dx * PARAMS.speed / 1000;
             this.velocity.y += dy * PARAMS.speed / 1000;
 
-            this.x += dx * PARAMS.cling / 1000;
-            this.y += dy * PARAMS.cling / 1000;
+            const maxVel = 25;
+            this.velocity.x = clamp(-maxVel, this.velocity.x, maxVel);
+            this.velocity.y = clamp(-maxVel, this.velocity.y, maxVel);
+
+            this.x += clamp(-maxVel, dx * PARAMS.cling / 1000, maxVel);
+            this.y += clamp(-maxVel, dy * PARAMS.cling / 1000, maxVel);
         } else {
             this.velocity.y += PARAMS.gravity / 1000;
             this.isControlled = false;
@@ -118,9 +138,9 @@ class Dice {
 
         if (this.onFloor()) {
             // bounce off the ground
-            if (this.body == "bouncy" && !this.wasCalculated && this.velocity.y > 20) {
+            if (this.body == "bouncy" && !this.wasCalculated && this.velocity.y > 30) {
                 this.showGoldParticle();
-                this.y -= 40;
+                this.y -= 60;
                 this.velocity.y *= -0.5;
                 return;
             }
@@ -145,6 +165,16 @@ class Dice {
             if (Math.abs(this.velocity.y) < 2)
                 this.velocity.y = 0;
         } else {
+            if (this.body == "ghost" && !this.isControlled) {
+                const ghostTime = 0.75;
+                this.ghostElapsed += this.game.clockTick;
+                
+                if (this.ghostElapsed >= ghostTime) {
+                    this.ghostElapsed = this.ghostElapsed % ghostTime;
+                    this.showGoldParticle();
+                }
+            }
+
             this.rotationElapsedTime += this.game.clockTick;
             if (this.rotationElapsedTime >= 1 / PARAMS.rotationSpeed) {
                 this.rotationElapsedTime = this.rotationElapsedTime % (1 / PARAMS.rotationSpeed);
@@ -154,11 +184,11 @@ class Dice {
         }
         
         // prevent dice from leaving play
-        if (this.y <= 0 || this.y >= PARAMS.canvasHeight - this.height) {
+        if (this.y >= PARAMS.canvasHeight - this.height) {
             if (!this.onFloor())
                 this.velocity.y = -this.velocity.y * PARAMS.bounce;
 
-            this.y = clamp(0, this.y, PARAMS.canvasHeight - this.height);
+            this.y = Math.min(this.y, PARAMS.canvasHeight - this.height);
         }
         if (this.x <= 0 || this.x >= PARAMS.canvasWidth - this.width) {
             if (this.mod == "fractured") {
@@ -185,10 +215,30 @@ class Dice {
             this.x = clamp(0, this.x, PARAMS.canvasWidth - this.width);
         }
 
+
         this.z = this.y;
     }
 
     draw(ctx) {
+        if (this.y < 0) {
+            const w = 70;
+            const h = 35;
+            ctx.save();
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(this.x, 15);
+            ctx.lineTo(this.x + w / 2, 15 + h);
+            ctx.lineTo(this.x - w / 2, 15 + h);
+            ctx.fill();
+
+            ctx.textBaseline = 'center';
+            ctx.textAlign = 'center';
+            ctx.font = '20pt monospace';
+            const dieHeight = -Math.round(this.y / PARAMS.canvasHeight);
+            ctx.fillText(`${dieHeight}m`, this.x, h + 40);
+            ctx.restore();
+            return;
+        }
 
         // rotate dice
         this.offscreenCtx.save();

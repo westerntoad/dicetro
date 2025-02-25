@@ -39,6 +39,8 @@
 // 8.  - empty faces score special
 // 9. Fissure - fractured die split into additional copies
 // 10. - increases value of golden dice
+// 11. - ghost die give increasingly more amounts of money while in the air
+// 12. - gives one extra reroll per shop
 
 ITEM_POOL = {};
 

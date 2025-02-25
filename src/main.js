@@ -4,10 +4,10 @@ const PARAMS = {
     debug: true,
     initialRolls: 2, // in actuality, 3
     diceSlotCosts: [0, 5, 25, 100, 500, 5_000],
-    speed: 75,
-    cling: 100,
+    speed: 20,
+    cling: 25,
     friction: 100,
-    gravity: 500,
+    gravity: 900,
     drag: 1.4,
     bounce: 0.4,
     rotationSpeed: 20,
@@ -42,6 +42,7 @@ const ASSET_MANAGER = new AssetManager();
 ASSET_MANAGER.queue('assets/empty-dice.png');
 ASSET_MANAGER.queue('assets/bouncy-dice.png');
 ASSET_MANAGER.queue('assets/gold-dice.png');
+ASSET_MANAGER.queue('assets/ghost-dice.png');
 ASSET_MANAGER.queue('assets/fractured-mod.png');
 ASSET_MANAGER.queue('assets/left-right-sides.png');
 ASSET_MANAGER.queue('assets/top-sides.png');
