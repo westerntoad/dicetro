@@ -45,7 +45,9 @@ class Dice {
         } else {
             this.bodyImg = ASSET_MANAGER.get('assets/empty-dice.png');
         }
+        this.properties = BODY_PROPERTIES[this.body];
         this.fracturedImg = ASSET_MANAGER.get('assets/fractured-mod.png');
+        this.wingsImg = ASSET_MANAGER.get('assets/wings-mod.png');
         this.verticals = ASSET_MANAGER.get('assets/top-sides.png');
         this.horizontals = ASSET_MANAGER.get('assets/left-right-sides.png');
         this.multVerticals = ASSET_MANAGER.get('assets/top-sides-mult.png');
@@ -62,6 +64,8 @@ class Dice {
     }
 
     showGoldParticle() {
+        if (this.scene.deathElapsed) return;
+
         const orig = {
             x: clamp(100, this.x, PARAMS.canvasWidth - 100),
             y: Math.max(this.y, 100)
@@ -132,7 +136,10 @@ class Dice {
             this.x += clamp(-maxVel, dx * PARAMS.cling / 1000, maxVel);
             this.y += clamp(-maxVel, dy * PARAMS.cling / 1000, maxVel);
         } else {
-            this.velocity.y += PARAMS.gravity / 1000;
+            this.velocity.y += PARAMS.gravity / 1000 * this.properties.weight;
+            if (this.mod == "wings") {
+                this.velocity.y = Math.min(5, this.velocity.y);
+            }
             this.isControlled = false;
         }
 
@@ -145,8 +152,8 @@ class Dice {
                 return;
             }
             this.rotation = 0;
-            this.velocity.x = this.velocity.x /  PARAMS.drag;
-            this.velocity.y = this.velocity.y / (PARAMS.drag * 1.5);
+            this.velocity.x = this.velocity.x /  PARAMS.drag * this.properties.drag;
+            this.velocity.y = this.velocity.y / (PARAMS.drag * 1.5) * this.properties.drag;
 
             if (!this.wasCalculated) {
                 if (this.mult && this.mult[this.nortIdx]) {
@@ -166,7 +173,7 @@ class Dice {
                 this.velocity.y = 0;
         } else {
             if (this.body == "ghost" && !this.isControlled) {
-                const ghostTime = 0.75;
+                const ghostTime = 1;
                 this.ghostElapsed += this.game.clockTick;
                 
                 if (this.ghostElapsed >= ghostTime) {
@@ -176,7 +183,9 @@ class Dice {
             }
 
             this.rotationElapsedTime += this.game.clockTick;
-            if (this.rotationElapsedTime >= 1 / PARAMS.rotationSpeed) {
+            if (this.mod == "wings" && this.velocity.y > 0 && !this.isControlled) {
+                this.rotation = 0;
+            } else if (this.rotationElapsedTime >= 1 / PARAMS.rotationSpeed) {
                 this.rotationElapsedTime = this.rotationElapsedTime % (1 / PARAMS.rotationSpeed);
                 this.rotation += Math.PI / 2;
                 this.roll();
@@ -186,7 +195,7 @@ class Dice {
         // prevent dice from leaving play
         if (this.y >= PARAMS.canvasHeight - this.height) {
             if (!this.onFloor())
-                this.velocity.y = -this.velocity.y * PARAMS.bounce;
+                this.velocity.y = -this.velocity.y * PARAMS.bounce * this.properties.bounce;
 
             this.y = Math.min(this.y, PARAMS.canvasHeight - this.height);
         }
@@ -210,7 +219,7 @@ class Dice {
                 return;
             }
 
-            this.velocity.x = -this.velocity.x * PARAMS.bounce;
+            this.velocity.x = -this.velocity.x * PARAMS.bounce * this.properties.bounce;
 
             this.x = clamp(0, this.x, PARAMS.canvasWidth - this.width);
         }
@@ -249,9 +258,12 @@ class Dice {
 
         // draw empty dice
         this.offscreenCtx.drawImage(this.bodyImg, 0, 0, this.size, this.size);
-        if (this.mod == "fractured") {
+
+        if (this.mod == "fractured")
             this.offscreenCtx.drawImage(this.fracturedImg, 0, 0, this.size, this.size);
-        }
+        if (this.mod == "wings")
+            this.offscreenCtx.drawImage(this.wingsImg, 0, 0, this.size, this.size);
+
         // draw top face
         if (this.mult && this.mult[this.nortIdx]) {
             const multIdx = Math.floor(Math.log2(this.mult[this.nortIdx])) - 1;

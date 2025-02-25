@@ -11,7 +11,10 @@ class SceneManager {
         if (PARAMS.debug) {
             this.dice = [
                 //{ sides: [1, 3, 6, 4, 5, 2] }
-                { sides: [1, 3, 6, 4, 5, 2], body: "ghost" },
+                { sides: [1, 3, 6, 4, 5, 2], body: "normal", mod: "wings"},
+                //{ sides: [1, 3, 6, 4, 5, 2], body: "bouncy" },
+                //{ sides: [1, 3, 6, 4, 5, 2], body: "gold" },
+                //{ sides: [1, 3, 6, 4, 5, 2], body: "ghost" }
                 //{ sides: [1, 3, 6, 4, 5, 2], mult: [0, 0, 0, 0, 0, 0], body: "gold", mod: "none" }
             ];
         } else {

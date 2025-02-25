@@ -7,7 +7,7 @@ const PARAMS = {
     speed: 20,
     cling: 25,
     friction: 100,
-    gravity: 900,
+    gravity: 1500,
     drag: 1.4,
     bounce: 0.4,
     rotationSpeed: 20,
@@ -37,6 +37,28 @@ const PARAMS = {
     }
 }
 
+const BODY_PROPERTIES = [];
+BODY_PROPERTIES["normal"] = {
+    weight: 1,
+    bounce: 1,
+    drag: 1
+}
+BODY_PROPERTIES["bouncy"] = {
+    weight: 0.85,
+    bounce: 2.25,
+    drag: 1
+}
+BODY_PROPERTIES["gold"] = {
+    weight: 3,
+    bounce: 0.2,
+    drag: 1.1
+}
+BODY_PROPERTIES["ghost"] = {
+    weight: 0.4,
+    bounce: 0.8,
+    drag: 0.2
+}
+
 const ASSET_MANAGER = new AssetManager();
 
 ASSET_MANAGER.queue('assets/empty-dice.png');
@@ -44,6 +66,7 @@ ASSET_MANAGER.queue('assets/bouncy-dice.png');
 ASSET_MANAGER.queue('assets/gold-dice.png');
 ASSET_MANAGER.queue('assets/ghost-dice.png');
 ASSET_MANAGER.queue('assets/fractured-mod.png');
+ASSET_MANAGER.queue('assets/wings-mod.png');
 ASSET_MANAGER.queue('assets/left-right-sides.png');
 ASSET_MANAGER.queue('assets/top-sides.png');
 ASSET_MANAGER.queue('assets/left-right-sides-mult.png');
