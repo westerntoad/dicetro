@@ -88,7 +88,7 @@ class Dice {
         } else {
             let amt = this.sides[this.nortIdx];
             if (this.body == "gold")
-                amt *= 10;
+                amt *= 10 * (this.scene.itemCount("Foot of Midas") + 1);
             this.scene.roundGold += amt;
             new Particle(this.game, orig, dest, 1, `$${amt}`, 'yellow');
         }
@@ -151,15 +151,13 @@ class Dice {
         } else {
             const wasNegative = this.velocity.y < 0;
             this.velocity.y += PARAMS.gravity / 1000 * this.properties.weight / spacemanCount;
-            /*if (this.velocity.y > 0 && wasNegative) {
-                this.velocity.y /= tarCount * 100;
-            }*/
+
             if (this.hasMod("wings")) {
                 this.velocity.y = Math.min(5, this.velocity.y);
             }
-            /*if (this.isControlled && this.velocity.y < 0) {
-                this.velocity.y *= (tarCount - 0.5) * 2;
-            }*/
+
+            this.scene.roundAltitude = Math.max(-Math.round(this.y / PARAMS.canvasHeight), this.scene.roundAltitude);
+
             this.isControlled = false;
         }
 

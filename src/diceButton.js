@@ -68,7 +68,7 @@ class DiceButton {
         
         // draw dice face
         if (dice.mult && dice.mult[idx]) {
-            sx = Math.floor(Math.log2(dice.mult[idx])) - 1;
+            sx = 32 * (Math.floor(Math.log2(dice.mult[idx])) - 1);
             sy = 32;
         } else {
             sx = 32 * dice.sides[idx];

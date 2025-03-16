@@ -1,7 +1,7 @@
 const gameEngine = new GameEngine();
 
 const PARAMS = {
-    debug: true,
+    debug: false,
     initialRolls: 2, // in actuality, 3
     extraRollCosts: [
         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25,
@@ -102,14 +102,26 @@ ASSET_MANAGER.queue('assets/overlay-bodies.png');
 ASSET_MANAGER.queue('assets/reroll.png');
 ASSET_MANAGER.queue('assets/coin.png');
 ASSET_MANAGER.queue('assets/lock.png');
-ASSET_MANAGER.queue('assets/clover.png');
-ASSET_MANAGER.queue('assets/ray.png');
-ASSET_MANAGER.queue('assets/fissure.png');
+ASSET_MANAGER.queue('assets/invalid-icon.png');
+
+// consumables
 ASSET_MANAGER.queue('assets/pick.png');
+ASSET_MANAGER.queue('assets/penny.png');
+ASSET_MANAGER.queue('assets/nickel.png');
+ASSET_MANAGER.queue('assets/dime.png');
+ASSET_MANAGER.queue('assets/quarter.png');
+ASSET_MANAGER.queue('assets/dollar.png');
+ASSET_MANAGER.queue('assets/ray.png');
+
+// passives
+ASSET_MANAGER.queue('assets/clover.png');
+ASSET_MANAGER.queue('assets/fissure.png');
 ASSET_MANAGER.queue('assets/tar.png');
 ASSET_MANAGER.queue('assets/spaceman.png');
 ASSET_MANAGER.queue('assets/free-shop.png');
-ASSET_MANAGER.queue('assets/invalid-icon.png');
+ASSET_MANAGER.queue('assets/midas.png');
+ASSET_MANAGER.queue('assets/space-station.png');
+ASSET_MANAGER.queue('assets/bedsheet.png');
 
 // music
 ASSET_MANAGER.queue('assets/maintheme.wav');

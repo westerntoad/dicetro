@@ -114,6 +114,22 @@ class Item {
                         return;
                     }
                 });
+            } else if (["Lost Penny", "Lost Nickel", "Lost Dime", "Lost Quarter", "Lost Dollar"].includes(this.item.name)) {
+                let value = 1;
+                if (this.item.name == 'Lost Nickel') {
+                    value = 5;
+                } else if (this.item.name == 'Lost Dime') {
+                    value = 10;
+                } else if (this.item.name == 'Lost Quarter') {
+                    value = 25;
+                } else if (this.item.name == 'Lost Dollar') {
+                    value = 100;
+
+                }
+
+                this.scene.gold += value;
+                this.taken = true;
+                this.itemIcon.removeFromWorld = true;
             }
         }
     }
@@ -174,7 +190,11 @@ class Item {
         ctx.fillText(this.name ? this.name : `${this.rarity} dice`, this.x + this.width * 0.5, this.y + 60, this.width);
 
         // cost
-        ctx.fillStyle = '#ff6666';
+        if (this.cost < this.scene.gold) {
+            ctx.fillStyle = '#22dd22';
+        } else {
+            ctx.fillStyle = '#ff6666';
+        }
         ctx.font = '24pt monospace';
         ctx.fillText(this.cost, this.x + this.width * 0.5, this.y + this.height - 40);
 

@@ -1,6 +1,7 @@
 class Shop {
     constructor(game, scene) {
         Object.assign(this, { game, scene });
+                console.log(this.scene.overlay);
         this.width = PARAMS.canvasWidth - 100;
         this.height = 450;
         this.x = (PARAMS.canvasWidth - this.width) / 2

@@ -7,8 +7,10 @@ class SceneManager {
         this.overlay = [];
         this.roundGold = 0;
         this.roundMult = 0;
+        this.roundAltitude = 0;
         // weird order to make sure dice are displayed correctly
         this.dice = [ { sides: [1, 3, 6, 4, 5, 2] } ];
+        //this.dice = [ { sides: [1, 3, 6, 4, 5, 2], body: 'gold' } ];
         //this.dice = [ { sides: [1, 3, 6, 4, 5, 2], body: "ghost", mods: ["wings"] } ];
         //this.dice = [ { sides: [0, 0, 0, 0, 0, 0], mult: [2, 2, 2, 2, 2, 2], body: "ghost" } ];
         this.inShop = false;
@@ -21,8 +23,6 @@ class SceneManager {
         this.rerolls = PARAMS.initialRolls;
         this.score = 1;
         this.totalScore = 0;
-        //this.extraRollCost = 1;
-        //this.previousExtraRollCost = 1;
         this.extraRollIdx = 0;
         this.diceControlDisabled = false;
         this.passives = [];
@@ -153,6 +153,7 @@ class SceneManager {
                 this.totalScore += this.scoreGUI.gold;
                 this.shownScore = false;
                 this.hideScore();
+                this.roundAltitude = 0;
                 this.roundGold = 0;
                 this.roundMult = 0;
                 this.inShop = true;
@@ -197,7 +198,7 @@ class SceneManager {
 
             // draw dice face
             if (this.overlay[i].mult) {
-                sx = Math.floor(Math.log2(this.overlay[i].mult)) - 1;
+                sx = 32 * (Math.floor(Math.log2(this.overlay[i].mult)) - 1);
                 sy = 32;
             } else {
                 sx = 32 * this.overlay[i].val;

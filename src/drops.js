@@ -75,7 +75,7 @@ ITEM_POOL._allSidesFromTable = table => {
     return sides;
 }
 
-ITEM_POOL._dropDice = (sideTable, multTable, bodyTable, modsTable) => {
+ITEM_POOL._dropDice = (sideTable, multTable, bodyTable, modsTable, allSided) => {
     /*     0  1  2  3  4  5  6
     sides:[0, 0, 0, 0, 0, 0, 0],
            x2    x4    x8    x16
@@ -85,20 +85,51 @@ ITEM_POOL._dropDice = (sideTable, multTable, bodyTable, modsTable) => {
            fractured wings
     mods: [0       , 0       ],*/
 
-    const sides = ITEM_POOL._allSidesFromTable(sideTable);
-    const mult = [0, 0, 0, 0, 0, 0];
     let body = "normal";
     let mods = [];
-    for (let i = 0; i < mult.length; i++) {
-        const rand = Math.random();
+    let sides = [];
+    let mult = [];
+    if (!allSided) {
+        sides = ITEM_POOL._allSidesFromTable(sideTable);
+        mult = [0, 0, 0, 0, 0, 0];
+        for (let i = 0; i < mult.length; i++) {
+            const rand = Math.random();
+            let sum = 0;
+
+            for (let j = multTable.length - 1; j >= 0; j--) {
+                sum += multTable[j];
+
+                if (rand <= sum) { 
+                    sides[i] = 0;
+                    mult[i] = 2**(j+1);
+                }
+            }
+        }
+    } else {
+        let rand = Math.random();
         let sum = 0;
+        let flag = false;
 
-        for (let j = multTable.length - 1; j >= 0; j--) {
-            sum += multTable[j];
+        for (let i = multTable.length - 1; i >= 0; i--) {
+            sum += multTable[i];
 
-            if (rand <= sum) { 
-                sides[i] = 0;
-                mult[i] = 2**(j+1);
+            if (rand <= sum) {
+                mult = Array(6).fill(2**(i+1));
+                flag = true;
+                break;
+            }
+        }
+
+        if (!flag) {
+            rand = Math.random();
+            sum = 0;
+            for (let i = 0; i < sideTable.length; i++) {
+                sum += sideTable[i];
+
+                if (rand <= sum) {
+                    sides = Array(6).fill(i);
+                    break;
+                }
             }
         }
     }
@@ -119,10 +150,6 @@ ITEM_POOL._dropDice = (sideTable, multTable, bodyTable, modsTable) => {
             break;
         }
     }
-    console.log(sum);
-    console.log(rand);
-    console.log(bodyTable);
-    console.log(body);
 
     for (let i = 0; i < modsTable.length; i++) {
         rand = Math.random();
@@ -158,7 +185,7 @@ ITEM_POOL._drop = table => {
     const rand = Math.random();
     let sum = 0;
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < table.length; i++) {
         sum += table[i][1];
 
         if (rand <= sum) {
@@ -170,7 +197,7 @@ ITEM_POOL._drop = table => {
                 el.item.count = 1;
             }
             if (el.gen) {
-                const genItem = ITEM_POOL._dropDice(el.gen.sides, el.gen.mult, el.gen.body, el.gen.mods);
+                const genItem = ITEM_POOL._dropDice(el.gen.sides, el.gen.mult, el.gen.body, el.gen.mods, el.gen.allSided);
                 return { item: genItem, name: el.name, cost: el.cost };
             } else {
                 return table[i][0];
@@ -199,29 +226,14 @@ ITEM_POOL.items.normalDie = {
     }
 }
 
-ITEM_POOL.items.poorDie = {
-    name: 'Poor Die',
-    cost: 5,
-    gen: {
-        //     0     1     2     3     4     5     6
-        sides:[0.15, 0.30, 0.15, 0.10, 0.10, 0.10, 0.10],
-        //     x2    x4    x8    x16
-        mult: [0.20, 0   , 0   , 0   ],
-        //     bouncy    ghost     gold
-        body: [0.00    , 1.00    , 0.00    ],
-        //     fractured wings
-        mods: [0.02    , 0.03    ],
-    }
-}
-
 ITEM_POOL.items.commonDie = {
     name: 'Common Die',
-    cost: 5,
+    cost: 10,
     gen: {
         //     0     1     2     3     4     5     6
         sides:[0.01, 0.16, 0.16, 0.16, 0.21, 0.15, 0.15],
         //     x2    x4    x8    x16
-        mult: [0.15, 0.15, 0   , 0   ],
+        mult: [0.15, 0.15, 0.00, 0.00],
         //     bouncy    ghost     gold
         body: [0.10    , 0.02    , 0.02    ],
         //     fractured wings
@@ -229,18 +241,57 @@ ITEM_POOL.items.commonDie = {
     }
 }
 
-ITEM_POOL.items.uncommonDie = {
-    name: 'Uncommon Die',
+ITEM_POOL.items.valuableDie = {
+    name: 'Valuable Die',
     cost: 25,
     gen: {
         //     0     1     2     3     4     5     6
-        sides:[0   , 0.15, 0.15, 0.15, 0.15, 0.15, 0.15],
+        sides:[0   , 0.15, 0.15, 0.15, 0.15, 0.20, 0.20],
         //     x2    x4    x8    x16
-        mult: [0.05, 0.10, 0.05, 0   ],
+        mult: [0.15, 0.15, 0.10, 0.00],
         //     bouncy    ghost     gold
-        body: [0.15    , 0.05    , 0.05    ],
+        body: [0.15    , 0.05    , 0.20    ],
         //     fractured wings
-        mods: [0       , 0.01    ],
+        mods: [0.05    , 0.01    ],
+    }
+}
+
+ITEM_POOL.items.bouncyNormalDie = {
+    name: 'Bouncy Normal Die',
+    cost: 40,
+    item: {
+        type: 'dice',
+        sides:[1, 3, 6, 4, 5, 2],
+        mult: [0, 0, 0, 0, 0, 0],
+        body: "bouncy",
+        mods: []
+    }
+}
+
+ITEM_POOL.items.lowMultDie = {
+    name: 'Low Mult Die',
+    cost: 30,
+    item: {
+        type: 'dice',
+        sides:[0, 0, 0, 0, 0, 0],
+        mult: [2, 2, 2, 2, 2, 2],
+        body: "normal",
+        mods: []
+    }
+}
+
+ITEM_POOL.items.wingedDie = {
+    name: 'Winged Die',
+    cost: 50,
+    gen: {
+        //     0     1     2     3     4     5     6
+        sides:[0   , 0.15, 0.25, 0.15, 0.15, 0.20, 0.10],
+        //     x2    x4    x8    x16
+        mult: [0.10, 0.05, 0.00, 0.00],
+        //     bouncy    ghost     gold
+        body: [0.00    , 0.20    , 0.00    ],
+        //     fractured wings
+        mods: [0.00    , 1.00    ],
     }
 }
 
@@ -251,11 +302,107 @@ ITEM_POOL.items.rareDie = {
         //     0     1     2     3     4     5     6
         sides:[0   , 0.05, 0.05, 0.05, 0.30, 0.20, 0.35],
         //     x2    x4    x8    x16
-        mult: [0   , 0.05, 0.10, 0.05],
+        mult: [0.00, 0.05, 0.15, 0.05],
+        //     bouncy    ghost     gold
+        body: [0.15    , 0.10    , 0.10    ],
+        //     fractured wings
+        mods: [0.05    , 0.10    ],
+    }
+}
+
+ITEM_POOL.items.allSidedDie = {
+    name: 'All-sided Die',
+    cost: 150,
+    gen: {
+        //     0     1     2     3     4     5     6
+        sides:[0   , 0.05, 0.05, 0.05, 0.30, 0.20, 0.35],
+        //     x2    x4    x8    x16
+        mult: [0.00, 0.05, 0.05, 0.00],
         //     bouncy    ghost     gold
         body: [0.15    , 0.05    , 0.10    ],
         //     fractured wings
-        mods: [0.05    , 0.05    ],
+        mods: [0.10    , 0.05    ],
+
+        allSided: true
+    }
+}
+
+ITEM_POOL.items.goldDie = {
+    name: 'Gold Die',
+    cost: 300,
+    gen: {
+        //     0     1     2     3     4     5     6
+        sides:[0   , 0.05, 0.10, 0.15, 0.20, 0.20, 0.30],
+        //     x2    x4    x8    x16
+        mult: [0.00, 0.00, 0.00, 0.00],
+        //     bouncy    ghost     gold
+        body: [0.00    , 0.00    , 1.00    ],
+        //     fractured wings
+        mods: [0.00    , 0.00    ],
+    }
+}
+
+ITEM_POOL.items.ghostDie = {
+    name: 'Ghost Die',
+    cost: 200,
+    gen: {
+        //     0     1     2     3     4     5     6
+        sides:[0.01, 0.17, 0.17, 0.17, 0.18, 0.15, 0.15],
+        //     x2    x4    x8    x16
+        mult: [0.02, 0.10, 0.02, 0.00],
+        //     bouncy    ghost     gold
+        body: [0.00    , 1.00    , 0.00    ],
+        //     fractured wings
+        mods: [0.00    , 0.20    ],
+    }
+}
+
+ITEM_POOL.items.fracturedDie = {
+    name: 'Fractured Die',
+    cost: 300,
+    gen: {
+        //     0     1     2     3     4     5     6
+        sides:[0   , 0.15, 0.15, 0.15, 0.15, 0.20, 0.20],
+        //     x2    x4    x8    x16
+        mult: [0.00, 0.00, 0.00, 0.00],
+        //     bouncy    ghost     gold
+        body: [0.15    , 0.05    , 0.10    ],
+        //     fractured wings
+        mods: [1.00    , 0.00    ],
+    }
+}
+
+ITEM_POOL.items.megaMultDie = {
+    name: 'MEGA-MULT Die',
+    cost: 1000,
+    gen: {
+        //     0     1     2     3     4     5     6
+        sides:[0   , 0.00, 0.00, 0.00, 0.00, 0.00, 0.00],
+        //     x2    x4    x8    x16
+        mult: [0.00, 0.00, 0.00, 1.00],
+        //     bouncy    ghost     gold
+        body: [0.05    , 0.05    , 0.15    ],
+        //     fractured wings
+        mods: [0.00    , 0.00    ],
+
+        allSided: true
+    }
+}
+
+ITEM_POOL.items.absurdBounceDie = {
+    name: 'Absurdly Bouncy Die',
+    cost: 2000,
+    gen: {
+        //     0     1     2     3     4     5     6
+        sides:[0   , 0.00, 0.00, 0.00, 0.00, 0.00, 0.00],
+        //     x2    x4    x8    x16
+        mult: [0.00, 0.00, 0.00, 1.00],
+        //     bouncy    ghost     gold
+        body: [0.05    , 0.05    , 0.15    ],
+        //     fractured wings
+        mods: [0.00    , 0.00    ],
+
+        allSided: true
     }
 }
 
@@ -280,6 +427,58 @@ ITEM_POOL.items.ray = {
         type: 'consumable',
         icon: 'assets/ray.png',
         desc: 'Duplicates a random dice in inventory. (MUST HAVE ROOM)'
+    }
+}
+
+// lost money
+ITEM_POOL.items.penny = {
+    name: 'Lost Penny',
+    cost: 0,
+    item: {
+        type: 'consumable',
+        icon: 'assets/penny.png',
+        desc: 'Gain 1 gold - lucky you!'
+    }
+}
+
+ITEM_POOL.items.nickel = {
+    name: 'Lost Nickel',
+    cost: 0,
+    item: {
+        type: 'consumable',
+        icon: 'assets/nickel.png',
+        desc: 'Gain 5 gold - lucky you!'
+    }
+}
+
+ITEM_POOL.items.dime = {
+    name: 'Lost Dime',
+    cost: 0,
+    item: {
+        type: 'consumable',
+        icon: 'assets/dime.png',
+        desc: 'Gain 10 gold - lucky you!'
+    }
+}
+
+ITEM_POOL.items.quarter = {
+    name: 'Lost Quarter',
+    cost: 0,
+    item: {
+        type: 'consumable',
+        icon: 'assets/quarter.png',
+        desc: 'Gain 25 gold - lucky you!'
+    }
+}
+
+
+ITEM_POOL.items.dollar = {
+    name: 'Lost Dollar',
+    cost: 0,
+    item: {
+        type: 'consumable',
+        icon: 'assets/dollar.png',
+        desc: 'Gain 100 gold - lucky you!'
     }
 }
 
@@ -342,43 +541,96 @@ ITEM_POOL.items.bedsheet = {
     cost: 300,
     item: {
         type: 'passive',
-        icon: 'assets/invalid-icon.png',
+        icon: 'assets/bedsheet.png',
         desc: 'Increase the rate ghost dice trigger.'
     }
 }
 
+ITEM_POOL.items.midas = {
+    name: 'Foot of Midas',
+    cost: 1,
+    item: {
+        type: 'passive',
+        icon: 'assets/midas.png',
+        desc: 'Increase the value of gold dice.'
+    }
+}
+
+ITEM_POOL.items.spaceStation = {
+    name: 'Space Station',
+    cost: 1,
+    item: {
+        type: 'passive',
+        icon: 'assets/space-station.png',
+        desc: 'Gives gold equal to the highest altitude reached for a roll.'
+    }
+}
+
+// doubles values of base hands
+// whenever a dice hits a wall, score it
+// bouncy dice are more effective
+
+/*
+ *      ~~~~ DROPS ~~~~
+ */
+
 
 ITEM_POOL.dropCommon = () => {
-    return ITEM_POOL._drop([
-        //[ITEM_POOL.items.normalDie, 1.00],
-        [ITEM_POOL.items.poorDie,   1.00],
-        //[ITEM_POOL.items.commonDie, 0.30],
-        //[ITEM_POOL.items.spaceman,  0.50],
-        //[ITEM_POOL.items.tar,       0.50],
-    ]);
+    if (PARAMS.debug) {
+        return ITEM_POOL._drop([
+            [ITEM_POOL.items.poorDie,       1.00]
+        ]);
+    } else {
+        return ITEM_POOL._drop([
+            [ITEM_POOL.items.normalDie,    0.10],
+            [ITEM_POOL.items.commonDie,    0.30],
+
+            [ITEM_POOL.items.penny,        0.06],
+            [ITEM_POOL.items.nickel,       0.06],
+            [ITEM_POOL.items.dime,         0.06],
+            [ITEM_POOL.items.quarter,      0.06],
+            [ITEM_POOL.items.dollar,       0.06],
+            [ITEM_POOL.items.spaceman,     0.15],
+            [ITEM_POOL.items.tar,          0.15]
+        ]);
+    }
 }
 
 ITEM_POOL.dropUncommon = () => {
     return ITEM_POOL._drop([
-        //[ITEM_POOL.items.uncommonDie, 0.50],
-        [ITEM_POOL.items.clover,      0.50],
-        [ITEM_POOL.items.freeShop,    0.50],
+        [ITEM_POOL.items.valuableDie,     0.25],
+        [ITEM_POOL.items.bouncyNormalDie, 0.15],
+        [ITEM_POOL.items.lowMultDie,      0.20],
+        [ITEM_POOL.items.wingedDie,       0.05],
+
+        [ITEM_POOL.items.spaceStation,    0.15],
+        [ITEM_POOL.items.clover,          0.10],
+        [ITEM_POOL.items.freeShop,        0.10],
     ]);
 
 }
 
 ITEM_POOL.dropRare = () => {
     return ITEM_POOL._drop([
-        //[ITEM_POOL.items.rareDie,  0.50],
-        [ITEM_POOL.items.fissure,  0.50],
-        [ITEM_POOL.items.bedsheet, 0.50],
+        [ITEM_POOL.items.rareDie,      0.25],
+        [ITEM_POOL.items.allSidedDie,  0.20],
+        [ITEM_POOL.items.goldDie,      0.15],
+        [ITEM_POOL.items.ghostDie,     0.05],
+        [ITEM_POOL.items.fracturedDie, 0.10],
+
+        [ITEM_POOL.items.bedsheet,     0.10],
+        [ITEM_POOL.items.midas,        0.15],
     ]);
 
 }
 
 ITEM_POOL.dropMythic = () => {
     return ITEM_POOL._drop([
-        [ITEM_POOL.items.ray,  0.50],
-        [ITEM_POOL.items.pick, 0.50],
+        [ITEM_POOL.items.megaMultDie,     0.20],
+        [ITEM_POOL.items.absurdBounceDie, 0.20],
+
+        [ITEM_POOL.items.ray,             0.20],
+        [ITEM_POOL.items.fissure,         0.20],
+        [ITEM_POOL.items.pick,            0.20],
     ]);
 }
