@@ -11,9 +11,9 @@ const PARAMS = {
     drag: 1.4,
     bounce: 0.4,
     rotationSpeed: 20,
-    uncommonChance: 0.25,
-    rareChance: 0.05,
-    mythicChance: 0.01,
+    uncommonChance: 0.125,
+    rareChance: 0.02,
+    mythicChance: 0.005,
     font: {
         shopName: '20pt Papyrus',
         common: '14pt Courier',
@@ -68,18 +68,27 @@ BODY_PROPERTIES["ghost"] = {
 
 const ASSET_MANAGER = new AssetManager();
 
+// dice bodies
 ASSET_MANAGER.queue('assets/empty-dice.png');
 ASSET_MANAGER.queue('assets/bouncy-dice.png');
 ASSET_MANAGER.queue('assets/gold-dice.png');
 ASSET_MANAGER.queue('assets/ghost-dice.png');
+
+// mods
 ASSET_MANAGER.queue('assets/fractured-mod.png');
 ASSET_MANAGER.queue('assets/wings-mod.png');
+
+// dice sides
 ASSET_MANAGER.queue('assets/left-right-sides.png');
 ASSET_MANAGER.queue('assets/top-sides.png');
 ASSET_MANAGER.queue('assets/left-right-sides-mult.png');
 ASSET_MANAGER.queue('assets/top-sides-mult.png');
-ASSET_MANAGER.queue('assets/dice-overlay.png');
-ASSET_MANAGER.queue('assets/mult-overlay.png');
+
+// overlays
+ASSET_MANAGER.queue('assets/overlay-faces.png');
+ASSET_MANAGER.queue('assets/overlay-bodies.png');
+
+// shop icons
 ASSET_MANAGER.queue('assets/reroll.png');
 ASSET_MANAGER.queue('assets/coin.png');
 ASSET_MANAGER.queue('assets/lock.png');
@@ -91,8 +100,12 @@ ASSET_MANAGER.queue('assets/tar.png');
 ASSET_MANAGER.queue('assets/spaceman.png');
 ASSET_MANAGER.queue('assets/free-shop.png');
 ASSET_MANAGER.queue('assets/invalid-icon.png');
+
+// music
 ASSET_MANAGER.queue('assets/maintheme.wav');
 ASSET_MANAGER.queue('assets/gameover.wav');
+
+// sound effects
 ASSET_MANAGER.queue('assets/diceland1.wav');
 ASSET_MANAGER.queue('assets/diceland2.wav');
 ASSET_MANAGER.queue('assets/diceland3.wav');

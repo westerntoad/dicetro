@@ -74,6 +74,9 @@ class Shop {
             if (item.itemIcon)
                 item.itemIcon.removeFromWorld = true;
 
+            if (item.diceButt)
+                item.diceButt.removeFromWorld = true;
+
             item.removeFromWorld = true;
         });
 
@@ -152,7 +155,7 @@ class Shop {
         ctx.fillStyle = PARAMS.color.reroll;
         ctx.textAlign = 'left';
         ctx.fillText(`. ${this.scene.rerolls}`, this.x + 131, this.y + this.height - 25);
-        ctx.drawImage(ASSET_MANAGER.get('assets/reroll.png'), this.x + 129, this.y + this.height - 44, 16 * 1.5, 16 * 1.5);
+        ctx.drawImage(ASSET_MANAGER.get('assets/reroll.png'), 0, 0, 16, 16, this.x + 129, this.y + this.height - 44, 16 * 1.5, 16 * 1.5);
 
         // extra roll button cost
         ctx.fillStyle = 'red';

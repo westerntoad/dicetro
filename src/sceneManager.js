@@ -10,6 +10,7 @@ class SceneManager {
         // weird order to make sure dice are displayed correctly
         this.dice = [ { sides: [1, 3, 6, 4, 5, 2] } ];
         //this.dice = [ { sides: [1, 3, 6, 4, 5, 2], body: "ghost", mods: ["wings"] } ];
+        //this.dice = [ { sides: [0, 0, 0, 0, 0, 0], mult: [2, 2, 2, 2, 2, 2], body: "ghost" } ];
         this.inShop = false;
         this.scoreDelay = 0;
         this.shopDelay = 1.25;
@@ -31,8 +32,8 @@ class SceneManager {
             this.passives.push(freeShop.item);
         }
 
-        this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');
-        this.multSheet = ASSET_MANAGER.get('assets/mult-overlay.png');
+        this.overlayBodiesImg = ASSET_MANAGER.get('assets/overlay-bodies.png');
+        this.overlayFacesImg  = ASSET_MANAGER.get('assets/overlay-faces.png' );
         this.particles = [];
         this.game.click = null;
     }
@@ -169,28 +170,46 @@ class SceneManager {
     }
 
     draw(ctx) {
-
+        //this.overlayBodiesImg = ASSET_MANAGER.get('assets/overlay-bodies.png');
+        //this.overlayFacesImg  = ASSET_MANAGER.get('assets/overlay-faces.png' );
         const overlayScale = 4;
         const size = 32 * overlayScale;
         for (let i = 0; i < this.overlay.length; i++) {
-            if (this.overlay[i].mult) {
-                const multIdx = Math.floor(Math.log2(this.overlay[i].mult)) - 1;
-                ctx.drawImage(this.multSheet,
-                    32 * multIdx, 0,
-                    32, 32,
-                    Math.floor(((size * i) % PARAMS.canvasWidth) / size) * size,
-                    Math.floor(size * i / PARAMS.canvasWidth) * size,
-                    32 * overlayScale, 32 * overlayScale
-                );
-            } else {
-                ctx.drawImage(this.overlaySheet,
-                    32 * this.overlay[i].val, 0,
-                    32, 32,
-                    Math.floor(((size * i) % PARAMS.canvasWidth) / size) * size,
-                    Math.floor(size * i / PARAMS.canvasWidth) * size,
-                    32 * overlayScale, 32 * overlayScale
-                );
+            let sx = 0;
+            let sy = 0;
+
+            // draw dice body
+            if (this.overlay[i].body == 'bouncy') {
+               sx = 32;
+            } else if (this.overlay[i].body == 'gold') {
+               sx = 64;
+            } else if (this.overlay[i].body == 'ghost') {
+               sx = 96;
             }
+            ctx.drawImage(this.overlayBodiesImg,
+                sx, sy,
+                32, 32,
+                Math.floor(((size * i) % PARAMS.canvasWidth) / size) * size,
+                Math.floor(size * i / PARAMS.canvasWidth) * size,
+                32 * overlayScale, 32 * overlayScale
+            );
+
+
+            // draw dice face
+            if (this.overlay[i].mult) {
+                sx = Math.floor(Math.log2(this.overlay[i].mult)) - 1;
+                sy = 32;
+            } else {
+                sx = 32 * this.overlay[i].val;
+            }
+            ctx.drawImage(this.overlayFacesImg,
+                sx, sy,
+                32, 32,
+                Math.floor(((size * i) % PARAMS.canvasWidth) / size) * size,
+                Math.floor(size * i / PARAMS.canvasWidth) * size,
+                32 * overlayScale, 32 * overlayScale
+            );
+
         }
 
         // felt table

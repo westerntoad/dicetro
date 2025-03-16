@@ -115,10 +115,14 @@ ITEM_POOL._dropDice = (sideTable, multTable, bodyTable, modsTable) => {
             else if (i == 1)
                 body = 'ghost';
             else if (i == 2)
-                body == 'gold'
+                body = 'gold'
             break;
         }
     }
+    console.log(sum);
+    console.log(rand);
+    console.log(bodyTable);
+    console.log(body);
 
     for (let i = 0; i < modsTable.length; i++) {
         rand = Math.random();
@@ -202,9 +206,9 @@ ITEM_POOL.items.poorDie = {
         //     0     1     2     3     4     5     6
         sides:[0.15, 0.30, 0.15, 0.10, 0.10, 0.10, 0.10],
         //     x2    x4    x8    x16
-        mult: [0.10, 0   , 0   , 0   ],
+        mult: [0.20, 0   , 0   , 0   ],
         //     bouncy    ghost     gold
-        body: [0       , 0.15    , 0       ],
+        body: [0.00    , 1.00    , 0.00    ],
         //     fractured wings
         mods: [0.02    , 0.03    ],
     }
@@ -215,11 +219,11 @@ ITEM_POOL.items.commonDie = {
     cost: 5,
     gen: {
         //     0     1     2     3     4     5     6
-        sides:[0.05, 0.15, 0.15, 0.15, 0.20, 0.15, 0.15],
+        sides:[0.01, 0.16, 0.16, 0.16, 0.21, 0.15, 0.15],
         //     x2    x4    x8    x16
-        mult: [0.10, 0.05, 0   , 0   ],
+        mult: [0.15, 0.15, 0   , 0   ],
         //     bouncy    ghost     gold
-        body: [0.05    , 0.02    , 0.02    ],
+        body: [0.10    , 0.02    , 0.02    ],
         //     fractured wings
         mods: [0.01    , 0.01    ],
     }

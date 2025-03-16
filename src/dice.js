@@ -179,9 +179,9 @@ class Dice {
 
             if (!this.wasCalculated) {
                 if (this.mult && this.mult[this.nortIdx]) {
-                    this.scene.overlay.push({ val: this.sides[this.nortIdx], mult: this.mult[this.nortIdx] });
+                    this.scene.overlay.push({ body: this.body, val: this.sides[this.nortIdx], mult: this.mult[this.nortIdx] });
                 } else {
-                    this.scene.overlay.push({ val: this.sides[this.nortIdx] });
+                    this.scene.overlay.push({ body: this.body, val: this.sides[this.nortIdx] });
                 }
                 this.wasCalculated = true;
                 this.showGoldParticle();
