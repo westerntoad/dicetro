@@ -21,8 +21,9 @@ class SceneManager {
         this.rerolls = PARAMS.initialRolls;
         this.score = 1;
         this.totalScore = 0;
-        this.extraRollCost = 1;
-        this.previousExtraRollCost = 1;
+        //this.extraRollCost = 1;
+        //this.previousExtraRollCost = 1;
+        this.extraRollIdx = 0;
         this.diceControlDisabled = false;
         this.passives = [];
         if (PARAMS.debug) {
@@ -103,9 +104,8 @@ class SceneManager {
                     this.gold = PARAMS.debug ? 999_999 : 0;
                     this.rerolls = PARAMS.initialRolls;
                     this.score = 0;
-                    this.extraRollCost = 1;
                     this.passives = [];
-                    this.previousExtraRollCost = 1;
+                    this.extraRollIdx = 0;
                     this.diceControlDisabled = false;
 
                     this.overlaySheet = ASSET_MANAGER.get('assets/dice-overlay.png');

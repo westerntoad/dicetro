@@ -20,13 +20,12 @@ class Shop {
             'Extra Roll',
             PARAMS.color.extraRoll, PARAMS.color.extraRollDark, '14pt monospace',
             () => {
-                const newCost = this.scene.previousExtraRollCost + this.scene.extraRollCost;
-                if (newCost > this.scene.gold)
+                const cost = PARAMS.extraRollCosts[this.scene.extraRollIdx];
+                if (cost > this.scene.gold)
                     return;
 
-                this.scene.gold -= this.scene.extraRollCost;
-                this.scene.previousExtraRollCost = this.scene.extraRollCost;
-                this.scene.extraRollCost = newCost;
+                this.scene.gold -= cost;
+                this.scene.extraRollIdx++;
                 this.scene.rerolls += 1;
             }
         );
@@ -158,9 +157,10 @@ class Shop {
         ctx.drawImage(ASSET_MANAGER.get('assets/reroll.png'), 0, 0, 16, 16, this.x + 129, this.y + this.height - 44, 16 * 1.5, 16 * 1.5);
 
         // extra roll button cost
+        const cost = PARAMS.extraRollCosts[this.scene.extraRollIdx];
         ctx.fillStyle = 'red';
         ctx.textAlign = 'right';
-        ctx.fillText(`${this.scene.extraRollCost}`, this.x + 585, this.y + this.height - 22);
+        ctx.fillText(cost, this.x + 585, this.y + this.height - 22);
 
         
         if (this.highlightDice) {
