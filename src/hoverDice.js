@@ -35,12 +35,14 @@ class HoverDice {
         const mx = this.game.mouse.x;
         const my = this.game.mouse.y;
         let sx = 0;
-        if (this.currDice.body == 'bouncy') {
-            sx = 16;
-        } else if (this.currDice.body == 'gold') {
-            sx = 32;
-        } else if (this.currDice.body == 'ghost') {
-            sx = 48;
+        if (this.currDice) {
+            if (this.currDice.body == 'bouncy') {
+                sx = 16;
+            } else if (this.currDice.body == 'gold') {
+                sx = 32;
+            } else if (this.currDice.body == 'ghost') {
+                sx = 48;
+            }
         }
         ctx.drawImage(this.origDiceButt.normalDiceImg, sx, 0, 16, 16, mx - 38 * 0.5, my - 38 * 0.5, 38, 38);
 
