@@ -9,6 +9,7 @@ class SceneManager {
         this.roundMult = 0;
         // weird order to make sure dice are displayed correctly
         this.dice = [ { sides: [1, 3, 6, 4, 5, 2] } ];
+        //this.dice = [ { sides: [1, 3, 6, 4, 5, 2], body: "ghost", mods: ["wings"] } ];
         this.inShop = false;
         this.scoreDelay = 0;
         this.shopDelay = 1.25;
@@ -183,7 +184,7 @@ class SceneManager {
                 );
             } else {
                 ctx.drawImage(this.overlaySheet,
-                    32 * (this.overlay[i].val - 1), 0,
+                    32 * this.overlay[i].val, 0,
                     32, 32,
                     Math.floor(((size * i) % PARAMS.canvasWidth) / size) * size,
                     Math.floor(size * i / PARAMS.canvasWidth) * size,

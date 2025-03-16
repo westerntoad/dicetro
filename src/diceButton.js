@@ -93,7 +93,7 @@ class DiceButton {
                         const multIdx = Math.floor(Math.log2(dice.mult[i])) - 1;
                         ctx.drawImage(this.scene.multSheet, 32 * multIdx, 0, 32, 32, x, y, w, h);
                     } else {
-                        const sideVal = dice.sides[i] - 1;
+                        const sideVal = dice.sides[i];
                         ctx.drawImage(this.scene.overlaySheet, 32 * sideVal, 0, 32, 32, x, y, w, h);
                     }
                 }
@@ -104,7 +104,7 @@ class DiceButton {
                     const multIdx = Math.floor(Math.log2(dice.mult[4])) - 1;
                     ctx.drawImage(this.scene.multSheet, 32 * multIdx, 0, 32, 32, x, y, w, h);
                 } else {
-                    const sideVal = dice.sides[4] - 1;
+                    const sideVal = dice.sides[4];
                     ctx.drawImage(this.scene.overlaySheet, 32 * sideVal, 0, 32, 32, x, y, w, h);
                 }
 
@@ -113,7 +113,7 @@ class DiceButton {
                     const multIdx = Math.floor(Math.log2(dice.mult[5])) - 1;
                     ctx.drawImage(this.scene.multSheet, 32 * multIdx, 0, 32, 32, x, y, w, h);
                 } else {
-                    const sideVal = dice.sides[5] - 1;
+                    const sideVal = dice.sides[5];
                     ctx.drawImage(this.scene.overlaySheet, 32 * sideVal, 0, 32, 32, x, y, w, h);
                 }
             }

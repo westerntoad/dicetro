@@ -1,7 +1,7 @@
 const gameEngine = new GameEngine();
 
 const PARAMS = {
-    debug: false,
+    debug: true,
     initialRolls: 2, // in actuality, 3
     diceSlotCosts: [0, 5, 25, 100, 500, 5_000],
     speed: 20,
@@ -38,11 +38,11 @@ const PARAMS = {
     }
 }
 
-if (PARAMS.debug) {
-    PARAMS.uncommonChance = 0.25;
-    PARAMS.rareChance = 0.25;
-    PARAMS.mythicChance = 0.25;
-}
+/*if (PARAMS.debug) {
+    PARAMS.uncommonChance = 0.15;
+    PARAMS.rareChance = 0.15;
+    PARAMS.mythicChance = 0.15;
+}*/
 
 const BODY_PROPERTIES = [];
 BODY_PROPERTIES["normal"] = {

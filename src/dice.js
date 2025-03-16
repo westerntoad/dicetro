@@ -257,7 +257,7 @@ class Dice {
     }
 
     draw(ctx) {
-        if (this.y + this.height < 0) {
+        if (this.y + this.height < 0) { // when dice is offscreen (negative y-axis)
             const w = 70;
             const h = 35;
             ctx.save();
@@ -296,7 +296,7 @@ class Dice {
         if (this.mult && this.mult[this.nortIdx]) {
             const multIdx = Math.floor(Math.log2(this.mult[this.nortIdx])) - 1;
             this.offscreenCtx.drawImage(this.multVerticals, 0, multIdx * 14, 26, 14, 3, 1, 26, 14);
-        } else {
+        } else if (this.currFaces.north != 0) {
             this.offscreenCtx.drawImage(this.verticals, 0, (this.currFaces.north - 1) * 14, 26, 14, 3, 1, 26, 14);
         }
         // draw left face

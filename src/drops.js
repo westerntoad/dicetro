@@ -200,7 +200,7 @@ ITEM_POOL.items.poorDie = {
     cost: 5,
     gen: {
         //     0     1     2     3     4     5     6
-        sides:[0.40, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10],
+        sides:[0.15, 0.30, 0.15, 0.10, 0.10, 0.10, 0.10],
         //     x2    x4    x8    x16
         mult: [0.10, 0   , 0   , 0   ],
         //     bouncy    ghost     gold
@@ -210,7 +210,7 @@ ITEM_POOL.items.poorDie = {
     }
 }
 
-ITEM_POOL.items.common = {
+ITEM_POOL.items.commonDie = {
     name: 'Common Die',
     cost: 5,
     gen: {
@@ -346,28 +346,28 @@ ITEM_POOL.items.bedsheet = {
 
 ITEM_POOL.dropCommon = () => {
     return ITEM_POOL._drop([
-        [ITEM_POOL.items.normalDie, 0.25],
-        [ITEM_POOL.items.poorDie,   0.25],
-        [ITEM_POOL.items.commonDie, 0.30],
-        [ITEM_POOL.items.spaceman,  0.10],
-        [ITEM_POOL.items.tar,       0.10],
+        //[ITEM_POOL.items.normalDie, 1.00],
+        [ITEM_POOL.items.poorDie,   1.00],
+        //[ITEM_POOL.items.commonDie, 0.30],
+        //[ITEM_POOL.items.spaceman,  0.50],
+        //[ITEM_POOL.items.tar,       0.50],
     ]);
 }
 
 ITEM_POOL.dropUncommon = () => {
     return ITEM_POOL._drop([
-        [ITEM_POOL.items.uncommonDie, 0.50],
-        [ITEM_POOL.items.clover,      0.25],
-        [ITEM_POOL.items.freeShop,    0.25],
+        //[ITEM_POOL.items.uncommonDie, 0.50],
+        [ITEM_POOL.items.clover,      0.50],
+        [ITEM_POOL.items.freeShop,    0.50],
     ]);
 
 }
 
 ITEM_POOL.dropRare = () => {
     return ITEM_POOL._drop([
-        [ITEM_POOL.items.rareDie,  0.50],
-        [ITEM_POOL.items.fissure,  0.25],
-        [ITEM_POOL.items.bedsheet, 0.25],
+        //[ITEM_POOL.items.rareDie,  0.50],
+        [ITEM_POOL.items.fissure,  0.50],
+        [ITEM_POOL.items.bedsheet, 0.50],
     ]);
 
 }

@@ -41,7 +41,10 @@ class Shop {
                 this.scene.rerolls--;
                 this.scene.items = [];
                 this.scene.overlay = [];
-                this.scene.dice.forEach(x => { x.removeFromWorld &&= true; });
+                this.scene.dice.forEach(x => {
+                    if (x)
+                        x.removeFromWorld = true;
+                });
                 this.scene.inShop = false;
                 this.scene.shouldThrow = true;
                 this.game.clear();
@@ -70,6 +73,7 @@ class Shop {
         this.items.forEach(item => {
             if (item.itemIcon)
                 item.itemIcon.removeFromWorld = true;
+
             item.removeFromWorld = true;
         });
 
@@ -92,6 +96,7 @@ class Shop {
                 rarity = 'uncommon';
             }
             this.items[i] = new Item(this.game, this.scene, this, loc, size, rarity);
+            console.log(this.items[i]) // DEBUG
             this.game.addEntity(this.items[i]);
         }
     }

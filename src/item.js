@@ -97,6 +97,9 @@ class Item {
                 this.scene.dice.forEach(dice => {
                     let found = false;
 
+                    if (!dice.mods)
+                        dice.mods = []
+
                     dice.mods.forEach(mod => {
                         if (mod == 'fractured')
                             found = true;
